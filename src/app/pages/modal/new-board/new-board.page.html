@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button (click)="hideModalBoard()" color="warning">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title color="warning">Crear nuevo tablero</ion-title>
+    <ion-buttons slot="end">
+      <ion-button slot="end" fill="solid" color="warning" (click)="saveBoard()" [disabled]="formBoard.invalid">
+        <ion-label color="dark">Jugar</ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="formBoard">
+    <ion-list-header mode="ios">Añade un título</ion-list-header>
+    <ion-item>
+      <ion-label position="stacked">Título</ion-label>
+      <ion-input clear-input formControlName="title" placeholder="Título del tablero"></ion-input>
+    </ion-item>
+    <ion-list-header mode="ios">Invita a tus amigos</ion-list-header>
+    <app-friends></app-friends>
+  </form>
+</ion-content>

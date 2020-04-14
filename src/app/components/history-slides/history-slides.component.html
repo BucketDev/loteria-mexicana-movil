@@ -1,0 +1,7 @@
+<ion-grid class="lm-history-container">
+  <ion-row>
+    <ion-col *ngFor="let card of historyCards | lastElements: 4" size="3">
+      <ion-img [src]="card.photoURL" alt="" class="lm-history-card"></ion-img>
+    </ion-col>
+  </ion-row>
+</ion-grid>

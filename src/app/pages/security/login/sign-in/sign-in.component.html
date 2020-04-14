@@ -1,0 +1,35 @@
+<ion-progress-bar type="indeterminate" color="warning" *ngIf="loading"></ion-progress-bar>
+<ion-list lines="full" class="ion-padding">
+  <form [formGroup]="signInFormGroup">
+    <ion-item>
+      <ion-label position="stacked">Correo</ion-label>
+      <ion-input type="email" placeholder="ejemplo@dominio.com" formControlName="email"></ion-input>
+      <ion-note slot="end" color="danger"
+                *ngIf="!signInFormGroup.untouched && signInFormGroup.controls.email.errors?.required">Campo Requerido</ion-note>
+      <ion-note slot="end" color="danger" *ngIf="signInFormGroup.controls.email.errors?.email">Email Incorrecto</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input placeholder="Contraseña" formControlName="password" type="password"></ion-input>
+      <ion-note slot="end" color="danger"
+                *ngIf="!signInFormGroup.untouched && signInFormGroup.controls.password.errors?.required">Campo Requerido</ion-note>
+    </ion-item>
+  </form>
+</ion-list>
+<ion-grid class="ion-no-padding">
+  <ion-row>
+    <ion-col size="6">
+      <ion-button size="block" color="medium" (click)="showSignUp()" class="ion-margin-horizontal">
+        <ion-icon name="create" slot="start"></ion-icon>
+        Regístrate
+      </ion-button>
+    </ion-col>
+    <ion-col size="6">
+      <ion-button size="block" color="light" class="ion-margin-horizontal"
+                  (click)="signIn()" [disabled]="signInFormGroup.invalid">
+        <ion-icon name="log-in" slot="start"></ion-icon>
+        Ingresar
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

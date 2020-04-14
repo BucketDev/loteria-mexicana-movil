@@ -1,0 +1,29 @@
+<ion-menu contentId="dashboard" menuId="menuProfile" side="start" type="overlay">
+  <ion-header>
+    <ion-toolbar color="warning">
+      <ion-chip slot="start" (click)="showProfilePage()">
+        <ion-avatar>
+          <img [src]="fireAuth.lotteryUser.photoURL" alt="">
+        </ion-avatar>
+        <ion-label>{{fireAuth.lotteryUser.displayName}}</ion-label>
+      </ion-chip>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button detail (click)="showFriends()">
+        <ion-icon slot="start" name="people-circle"></ion-icon>
+        <ion-label>Amigos</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+  <ion-footer>
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-button color="danger" fill="solid" (click)="signOut()">
+          <ion-icon name="exit" slot="start"></ion-icon>Salir
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+</ion-menu>

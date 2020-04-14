@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">loteria-mexicana</string>
+    <string name="title_activity_main">loteria-mexicana</string>
+    <string name="package_name">com.bucketdev.loteriamexicana</string>
+    <string name="custom_url_scheme">com.bucketdev.loteriamexicana</string>
+</resources>

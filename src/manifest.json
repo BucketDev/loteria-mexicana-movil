@@ -1,0 +1,6 @@
+{
+  "short_name": "Loteria Mexicana",
+  "name": "Angular + Ionic Loteria Mexicana",
+  "gcm_sender_id": "103953800507",
+  "start_url": "/?dashboard/home"
+}

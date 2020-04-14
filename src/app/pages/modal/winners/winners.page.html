@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button (click)="modalController.dismiss()" color="warning">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title color="warning">Lista de Ganadores</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>
+  <ng-template #notLoading>
+    <ion-list>
+      <app-empty-records icon="leaderboard" title="No hay ganadores aún" *ngIf="winners.length === 0"
+                         subtitle="Inicia un nuevo juego para ver quien gana"></app-empty-records>
+      <ion-item *ngFor="let user of winners; let idx = index">
+        <ion-avatar slot="start">
+          <ion-img [src]="getPositionImage(idx + 1)"></ion-img>
+        </ion-avatar>
+        <ion-avatar slot="start">
+          <ion-img [src]="user.photoURL"></ion-img>
+        </ion-avatar>
+        <div class="lm-display-user-name">
+          <ion-label>{{user.displayName}}</ion-label>
+          <ion-label color="medium" slot="end" class="ion-text-end">
+            <small>{{user.email}}</small>
+          </ion-label>
+        </div>
+        <ion-note slot="end" class="ion-text-right" color="medium">
+          <small>{{ user.creationDate | winnerDiff: winners }}</small>
+        </ion-note>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+</ion-content>
