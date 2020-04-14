@@ -34,9 +34,6 @@ export class ProfilePage implements OnInit {
       this.lotteryUser = user;
       if (uid === fireAuth.lotteryUser.uid) {
         this.isCurrentUser = true;
-        this.profileFormGroup = new FormGroup({
-          displayName: new FormControl(this.lotteryUser.displayName, [Validators.required])
-        })
         this.afAuth.user.subscribe((user) => {
           this.user = user;
           this.loading = false;
@@ -45,6 +42,9 @@ export class ProfilePage implements OnInit {
         this.isCurrentUser = false;
         this.loading = false;
       }
+      this.profileFormGroup = new FormGroup({
+        displayName: new FormControl(this.lotteryUser.displayName, [Validators.required])
+      })
     });
   }
 

@@ -11,7 +11,7 @@ exports.createUser = functions.auth.user().onCreate((userRecord, context) => {
   return admin.firestore().doc(`/users/${userRecord.uid}`).set({
     displayName: userRecord.displayName === null ? userRecord.email : userRecord.displayName,
     email: userRecord.email,
-    photoURL: userRecord.photoURL === null ? 'https://img.icons8.com/bubbles/gender-neutral-user' : userRecord.photoURL,
+    photoURL: userRecord.photoURL === null ? 'https://img.icons8.com/bubbles/256/gender-neutral-user' : userRecord.photoURL,
     firstPlaces: 0,
     secondPlaces: 0,
     thirdPlaces: 0,

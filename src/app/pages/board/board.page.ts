@@ -1,7 +1,13 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BoardsService} from '../../services/boards.service';
 import {ActivatedRoute} from '@angular/router';
-import {ActionSheetController, LoadingController, ModalController, ToastController} from '@ionic/angular';
+import {
+  ActionSheetController,
+  LoadingController,
+  ModalController,
+  PopoverController,
+  ToastController
+} from '@ionic/angular';
 import {FireAuthService} from '../../services/security/fire-auth.service';
 import {interval, Subscription} from 'rxjs';
 import {CardsService} from '../../services/cards.service';
@@ -14,6 +20,7 @@ import {BoardComponent} from "../../components/board/board.component";
 import {Board} from "../../models/board.class";
 import {Card} from "../../models/card.class";
 import {Winner} from "../../models/winner.class";
+import {MessagesComponent} from "../../components/messages/messages.component";
 
 @Component({
   selector: 'app-board-page',
@@ -41,7 +48,8 @@ export class BoardPage implements OnInit, OnDestroy {
               private modalController: ModalController,
               private actionSheetController: ActionSheetController,
               private toastController: ToastController,
-              private loadingController: LoadingController) { }
+              private loadingController: LoadingController,
+              private popoverController: PopoverController) { }
 
   ngOnInit() {
     const {userUid, uid} = this.activatedRoute.snapshot.params;
@@ -197,5 +205,8 @@ export class BoardPage implements OnInit, OnDestroy {
   }
 
   generateCurrentBoard = () => this.boardComponent.generateCurrentBoard();
+
+  showMessagesPopover = (event) => this.popoverController.create({ component: MessagesComponent, event })
+    .then(popover => popover.present())
 
 }

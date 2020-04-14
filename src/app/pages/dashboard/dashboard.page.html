@@ -1,17 +1,23 @@
 <ion-header>
   <ion-toolbar color="warning">
     <ion-buttons slot="start">
-      <ion-menu-button menu="menuProfile"></ion-menu-button>
+      <ion-chip (click)="showProfilePage()">
+        <ion-avatar class="ion-no-margin">
+          <ion-img [src]="fireAuth.lotteryUser.photoURL" alt=""></ion-img>
+        </ion-avatar>
+      </ion-chip>
     </ion-buttons>
     <ion-title>Lotería Mexicana</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="showFriendsPage()">
+        <ion-icon slot="icon-only" name="person-add-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="showNotifications($event)">
         <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<app-menu></app-menu>
 <ion-content id="dashboard">
   <ion-searchbar placeholder="Buscar Tableros"></ion-searchbar>
   <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>

@@ -11,6 +11,9 @@
       <ion-button *ngIf="isCreator && boardsService.board.status > 0" (click)="pauseGame()">
         <ion-icon name="pause" color="dark"></ion-icon>
       </ion-button>
+      <!--<ion-button (click)="showMessagesPopover($event)">
+        <ion-icon color="dark" slot="icon-only" name="chatbox"></ion-icon>
+      </ion-button>-->
       <ion-button (click)="showActionSheet()" [disabled]="boardsService.board?.status > 0">
         <ion-icon color="dark" slot="icon-only" name="settings"></ion-icon>
       </ion-button>
@@ -23,27 +26,5 @@
     <app-history-slides slot="fixed" class="lm-history-container"></app-history-slides>
     <app-board  *ngIf="boardsService.board"
                 [boardUid]="boardUid" [userUid]="userUid" (cardSelectedEvent)="cardSelected($event)"></app-board>
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button color="dark">
-        <ion-icon name="chatbubbles" color="warning"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-list side="top">
-        <ion-fab-button color="dark">
-          <ion-img src="https://img.icons8.com/color/32/stop-sign"></ion-img>
-        </ion-fab-button>
-         <ion-fab-button color="dark">
-          <ion-img src="https://img.icons8.com/flat_round/32/play--v1"></ion-img>
-        </ion-fab-button>
-         <ion-fab-button color="dark">
-          <ion-img src="https://img.icons8.com/color/32/smiling"></ion-img>
-        </ion-fab-button>
-         <ion-fab-button color="dark">
-          <ion-img src="https://img.icons8.com/color/32/crying--v1"></ion-img>
-        </ion-fab-button>
-         <ion-fab-button color="dark">
-          <ion-img src="https://img.icons8.com/color/32/angry--v1"></ion-img>
-        </ion-fab-button>
-      </ion-fab-list>
-    </ion-fab>
   </ng-template>
 </ion-content>

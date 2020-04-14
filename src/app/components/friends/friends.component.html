@@ -7,7 +7,7 @@
                      icon="crowd"></app-empty-records>
   <ion-list>
     <ion-item-sliding *ngFor="let friend of user.friends">
-      <ion-item>
+      <ion-item [detail]="!selectableFriend" (click)="!selectableFriend && showProfilePage(friend)">
         <ion-avatar slot="start">
           <img [src]="friend.photoURL" alt="profile photo">
         </ion-avatar>

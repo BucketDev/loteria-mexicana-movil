@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {LotteryUser} from '../../models/lottery-user.class';
 import {FriendsService} from '../../services/friends.service';
-import {IonCheckbox, ToastController} from '@ionic/angular';
+import {IonCheckbox, NavController, ToastController} from '@ionic/angular';
 import {UsersService} from "../../services/users.service";
 import {DocumentData, DocumentReference, DocumentSnapshot} from "@angular/fire/firestore";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-friends',
@@ -21,7 +22,9 @@ export class FriendsComponent {
 
   constructor(private friendsService: FriendsService,
               private usersService: UsersService,
-              private toastController: ToastController) {
+              private toastController: ToastController,
+              private navController: NavController,
+              private activatedRoute: ActivatedRoute) {
     usersService.find().subscribe((user: LotteryUser) => {
       this.user = user;
       this.user.friends = [];
@@ -52,5 +55,8 @@ export class FriendsComponent {
       this.selectedFriends = this.selectedFriends.filter((selectedFriend: LotteryUser) => friend.uid !== selectedFriend.uid);
     }
   }
+
+  showProfilePage = (friend: LotteryUser) => this.navController
+    .navigateForward(['../profile', friend.uid], { relativeTo: this.activatedRoute })
 
 }

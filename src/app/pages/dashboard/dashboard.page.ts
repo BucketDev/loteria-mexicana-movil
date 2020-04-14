@@ -30,10 +30,12 @@ export class DashboardPage {
               private popoverController: PopoverController,
               private modalController: ModalController,
               private router: Router,
-              private auth: FireAuthService,
+              public fireAuth: FireAuthService,
               private alertController: AlertController,
               private loadingController: LoadingController,
-              private toastController: ToastController) { }
+              private toastController: ToastController,
+              private navController: NavController,
+              private activatedRoute: ActivatedRoute) { }
 
   showNotifications = (event: MouseEvent) => {
     this.popoverController.create({
@@ -61,7 +63,7 @@ export class DashboardPage {
     await modal.present();
   }
 
-  showBoard = (uid: string) => this.router.navigateByUrl(`/board/${this.auth.lotteryUser.uid}/${uid}`);
+  showBoard = (uid: string) => this.router.navigateByUrl(`/board/${this.fireAuth.lotteryUser.uid}/${uid}`);
 
   showDeleteBoard = (board: Board) => this.alertController.create({
     header: '¿Deseas borrar el tablero?',
@@ -89,5 +91,11 @@ export class DashboardPage {
       }
     }]
   }).then(alert => alert.present());
+
+  showProfilePage = () => this.navController
+    .navigateForward(['../profile', this.fireAuth.lotteryUser.uid], { relativeTo: this.activatedRoute })
+
+  showFriendsPage = () => this.navController
+    .navigateForward(['../friends'], { relativeTo: this.activatedRoute });
 
 }

@@ -4,26 +4,27 @@
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-title>Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="fireAuth.signOut()">
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" color="light">
   <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>
   <ng-template #notLoading>
     <ion-card>
+      <ion-img [src]="lotteryUser.photoURL" alt="profile photo" (click)="isCurrentUser && photoInput.click()"></ion-img>
+      <input hidden type="file" #photoInput (change)="updatePhoto(photoInput)"/>
       <ion-progress-bar type="indeterminate" color="warning" *ngIf="updating"></ion-progress-bar>
-      <ion-card-header>
-        <ion-avatar class="ion-margin-end" (click)="photoInput.click()">
-          <ion-img [src]="lotteryUser.photoURL" alt="profile photo"></ion-img>
-        </ion-avatar>
-        <input hidden type="file" #photoInput (change)="updatePhoto(photoInput)"/>
-        <div>
-          <ion-card-title>{{lotteryUser.displayName}}</ion-card-title>
-          <ion-card-subtitle>{{user.email}}</ion-card-subtitle>
-        </div>
+      <ion-card-header class="ion-text-center">
+        <ion-card-title class="ion-text-wrap">{{lotteryUser.displayName}}</ion-card-title>
+        <ion-card-subtitle>{{lotteryUser.email}}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content class="ion-no-padding">
         <ion-list [formGroup]="profileFormGroup" lines="full">
-          <ion-item class="ion-text-end">
+          <ion-item class="ion-text-end" *ngIf="isCurrentUser">
             <ion-label slot="start">Nombre</ion-label>
             <ion-input placeholder="Nombre" formControlName="displayName"></ion-input>
           </ion-item>
@@ -40,31 +41,32 @@
               <ion-img src="https://img.icons8.com/color/40/medal2--v1.png"></ion-img>
             </ion-avatar>
             <ion-label>Primeros Lugares</ion-label>
-            <ion-note>{{lotteryUser.firstPlaces}}</ion-note>
+            <ion-note slot="end">{{lotteryUser.firstPlaces}}</ion-note>
           </ion-item>
           <ion-item>
             <ion-avatar slot="start">
               <ion-img src="https://img.icons8.com/color/40/medal-second-place--v1.png"></ion-img>
             </ion-avatar>
             <ion-label>Segundos Lugares</ion-label>
-            <ion-note>{{lotteryUser.secondPlaces}}</ion-note>
+            <ion-note slot="end">{{lotteryUser.secondPlaces}}</ion-note>
           </ion-item>
           <ion-item>
             <ion-avatar slot="start">
               <ion-img src="https://img.icons8.com/color/40/medal2-third-place--v1.png"></ion-img>
             </ion-avatar>
             <ion-label>Terceros Lugares</ion-label>
-            <ion-note>{{lotteryUser.thirdPlaces}}</ion-note>
+            <ion-note slot="end">{{lotteryUser.thirdPlaces}}</ion-note>
           </ion-item>
           <ion-item>
             <ion-avatar slot="start">
               <ion-img src="https://img.icons8.com/color/40/prize.png"></ion-img>
             </ion-avatar>
             <ion-label>Otros Lugares</ion-label>
-            <ion-note>{{lotteryUser.otherPlaces}}</ion-note>
+            <ion-note slot="end">{{lotteryUser.otherPlaces}}</ion-note>
           </ion-item>
         </ion-list>
-        <ion-button expand="block" color="warning" class="ion-margin" (click)="saveProfile()">Guardar</ion-button>
+        <ion-button expand="block" color="warning" class="ion-margin"
+                    *ngIf="isCurrentUser" (click)="saveProfile()">Guardar</ion-button>
       </ion-card-content>
     </ion-card>
   </ng-template>
