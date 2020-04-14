@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "ionic-loteria-mexicana"
+  },
+  "targets": {
+    "ionic-loteria-mexicana": {
+      "hosting": {
+        "app": [
+          "ionic-loteria-mexicana"
+        ]
+      }
+    }
+  }
+}

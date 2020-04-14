@@ -1,0 +1,20 @@
+<ion-list lines="full" class="ion-no-padding">
+  <ion-list-header mode="ios">Notificaciones</ion-list-header>
+  <ion-progress-bar color="warning" *ngIf="loading; else notLoading" type="indeterminate"></ion-progress-bar>
+  <ng-template #notLoading>
+    <app-empty-records *ngIf="notifications.length === 0"
+                        title="No hay notificaciones"
+                        icon="appointment-reminders" [mini]="true"></app-empty-records>
+    <ion-item button detail *ngFor="let notification of notifications" (click)="navigate(notification)">
+      <ion-avatar slot="start">
+        <img [src]="notification.photoURL" alt="">
+      </ion-avatar>
+      <div class="lm-notification-description-container">
+        <ion-text>{{notification.pre}}</ion-text>
+        <ion-text color="medium" class="ion-text-wrap"> {{notification.message}} </ion-text>
+        <ion-text>{{notification.post}}</ion-text>
+      </div>
+    </ion-item>
+  </ng-template>
+</ion-list>
+<ion-button size="full" color="warning" class="ion-no-margin" *ngIf="notifications.length > 0">Mostrar todas</ion-button>
