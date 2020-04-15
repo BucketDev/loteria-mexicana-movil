@@ -1,13 +1,11 @@
 import * as functions from 'firebase-functions';
 import * as admin from "firebase-admin";
-import DocumentSnapshot = admin.firestore.DocumentSnapshot;
-import DocumentData = admin.firestore.DocumentData;
+import {interval} from "rxjs";
+import {takeWhile} from "rxjs/operators";
 
 admin.initializeApp();
 
 exports.createUser = functions.auth.user().onCreate((userRecord, context) => {
-  console.log(userRecord.displayName);
-  console.log(userRecord.photoURL);
   return admin.firestore().doc(`/users/${userRecord.uid}`).set({
     displayName: userRecord.displayName === null ? userRecord.email : userRecord.displayName,
     email: userRecord.email,
@@ -35,73 +33,44 @@ exports.sendInvitePlayers = functions.firestore.document('users/{uid}/boards/{bo
         .then(boardDocument => {
           const boardData = boardDocument.data();
           if (boardData === undefined) {
-            console.log(context.params);
-            console.log(context.params.boardUid)
             console.error("Board does not exists");
             return null;
           }
           const notification = {
-            photoURL: 'https://img.icons8.com/bubbles/64/controller',
-            pre: userData.displayName ? userData.displayName : userData.email,
+            photoURL: userData.photoURL,
+            pre: userData.displayName,
             message: "te ha invitado a jugar",
             post: boardData.title,
             creationDate: new Date(),
             clicked: false,
             actionURL: `/board/${context.params.uid}/${context.params.boardUid}`
           };
-          return createNotification(context.params.playerUid, notification);
+          const playerRef = admin.firestore().collection('/users').doc(context.params.playerUid);
+          return playerRef.get()
+            .then(playerDocument => {
+              return playerRef.collection('notifications').add({...notification})
+                .then(playerUpdated => {
+                  // @ts-ignore
+                  const {fcmTokens} = playerDocument.data();
+                  const {uid, boardUid} = context.params;
+                  const tokens = fcmTokens ? Object.keys(fcmTokens) : [];
+                  if (!tokens.length) {
+                    console.error("User does not have any tokens");
+                    return null;
+                  }
+                  const payload = {
+                    notification: {
+                      title: '¡Corre y se va corriendo!',
+                      body: `${userData.displayName} te ha invitado a jugar Lotería Mexicana`
+                    },
+                    data: { uid, boardUid }
+                  };
+                  return admin.messaging().sendToDevice(tokens, payload).catch(console.error)
+                })
+                .catch(console.error);
+            })
+            .catch(console.error);
         })
         .catch(console.error)
     }).catch(console.error);
   });
-
-exports.friendAdded = functions.firestore.document('users/{uid}/friends/{friendUid}')
-  .onCreate((snapshot, context) => {
-    const userRef = admin.firestore().collection('users').doc(context.params.uid);
-    return userRef.get()
-      .then(userDocument => {
-        const userData = userDocument.data();
-        if (userData === undefined) {
-          console.error("User does not exists");
-          return null;
-        }
-        const notification = {
-          photoURL: userData.photoURL ? userData.photoURL : 'https://img.icons8.com/bubbles/gender-neutral-user',
-          pre: userData.displayName ? userData.displayName : userData.email,
-          message: "te ha agregado como amigo",
-          creationDate: new Date(),
-          clicked: false,
-          actionURL: `/profile/${context.params.friendUid}`
-        }
-        return createNotification(context.params.friendUid, notification);
-      }).catch(console.error);
-  });
-
-const createNotification = (friendUid: string, notification: any) => {
-  const playerRef = admin.firestore().collection('/users').doc(friendUid);
-  return playerRef.get()
-    .then(playerDocument => {
-      return playerRef.collection('notifications').add({...notification})
-        .then(() => {
-          sendToDevice(playerDocument)
-        })
-        .catch(console.error);
-    })
-    .catch(console.error);
-}
-
-const sendToDevice = (document: DocumentSnapshot<DocumentData>) => {
-  // @ts-ignore
-  const {fcmTokens} = document.data();
-  const payload = {
-    notification: {
-      title: 'A new board has being created!',
-      body: 'Tap here to play'
-    }
-  };
-  if (!fcmTokens.length) {
-    console.error("User does not have any tokens");
-    return null;
-  }
-  return admin.messaging().sendToDevice(fcmTokens, payload).catch(console.error)
-}

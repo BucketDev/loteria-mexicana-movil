@@ -11,7 +11,6 @@ import {ComponentsModule} from '../../components/components.module';
 import {BoardSettingsPageModule} from '../modal/board-settings/board-settings.module';
 import {WinnersPageModule} from '../modal/winners/winners.module';
 import {BoardPlayersPageModule} from '../modal/board-players/board-players.module';
-import {MessagesModule} from "../../components/messages/messages.module";
 
 @NgModule({
   imports: [
@@ -22,8 +21,7 @@ import {MessagesModule} from "../../components/messages/messages.module";
     ComponentsModule,
     BoardSettingsPageModule,
     WinnersPageModule,
-    BoardPlayersPageModule,
-    MessagesModule
+    BoardPlayersPageModule
   ],
   declarations: [BoardPage]
 })

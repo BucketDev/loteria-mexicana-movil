@@ -2,19 +2,21 @@
   <ion-toolbar color="warning">
     <ion-buttons slot="start">
       <ion-chip (click)="showProfilePage()">
-        <ion-avatar class="ion-no-margin">
+        <ion-avatar>
           <ion-img [src]="fireAuth.lotteryUser.photoURL" alt=""></ion-img>
         </ion-avatar>
+        <ion-label>Perfil</ion-label>
       </ion-chip>
     </ion-buttons>
     <ion-title>Lotería Mexicana</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" collapse="true">
       <ion-button (click)="showFriendsPage()">
         <ion-icon slot="icon-only" name="person-add-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="showNotifications($event)">
-        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      <ion-button (click)="showNotificationsPage()">
+        <ion-icon slot="icon-only" name="game-controller-outline"></ion-icon>
       </ion-button>
+      <ion-badge color="danger" *ngIf="notificationsUnread > 0">{{notificationsUnread}}</ion-badge>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -38,7 +40,6 @@
               {{board.creationDate | date: 'mediumDate'}}
             </ion-label>
           </div>
-
         </ion-item>
         <ion-item-options side="end">
           <ion-item-option color="danger" (click)="showDeleteBoard(board)">

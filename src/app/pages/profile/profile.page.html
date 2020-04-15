@@ -4,9 +4,9 @@
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-title>Perfil</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="isCurrentUser">
       <ion-button (click)="fireAuth.signOut()">
-        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

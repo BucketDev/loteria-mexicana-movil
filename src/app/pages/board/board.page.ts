@@ -3,8 +3,10 @@ import {BoardsService} from '../../services/boards.service';
 import {ActivatedRoute} from '@angular/router';
 import {
   ActionSheetController,
+  AlertController,
   LoadingController,
   ModalController,
+  NavController,
   PopoverController,
   ToastController
 } from '@ionic/angular';
@@ -20,7 +22,8 @@ import {BoardComponent} from "../../components/board/board.component";
 import {Board} from "../../models/board.class";
 import {Card} from "../../models/card.class";
 import {Winner} from "../../models/winner.class";
-import {MessagesComponent} from "../../components/messages/messages.component";
+import {takeWhile} from "rxjs/operators";
+import {BoardStatus} from "../../models/board-status.enum";
 
 @Component({
   selector: 'app-board-page',
@@ -31,13 +34,11 @@ export class BoardPage implements OnInit, OnDestroy {
 
   @ViewChild(HistorySlidesComponent, {static: false}) historySlides: HistorySlidesComponent;
   @ViewChild(BoardComponent, {static: false}) boardComponent: BoardComponent;
-  isCreator: boolean;
-  playingBoardSub: Subscription;
   updatingBoardSub: Subscription;
   winnersSub: Subscription;
+  isCreator: boolean;
   boardUid: string;
   userUid: string;
-  resume = false;
   loading = true;
 
   constructor(public boardsService: BoardsService,
@@ -49,31 +50,51 @@ export class BoardPage implements OnInit, OnDestroy {
               private actionSheetController: ActionSheetController,
               private toastController: ToastController,
               private loadingController: LoadingController,
-              private popoverController: PopoverController) { }
-
-  ngOnInit() {
+              private popoverController: PopoverController,
+              private alertController: AlertController,
+              private navController: NavController) {
     const {userUid, uid} = this.activatedRoute.snapshot.params;
     this.boardUid = uid;
     this.userUid = userUid;
     this.isCreator = userUid === this.auth.lotteryUser.uid;
     this.loadingController.create({
       message: 'Cargando tablero...',
-    }).then(loading => {
-      loading.present();
-      this.boardsService.findByUid(userUid, uid).toPromise()
-        .then(board => {
-          this.boardsService.board = board;
-          this.listenForBoard();
-          this.listenForWinners();
-          this.loading = false;
-          loading.dismiss();
-        })
+    }).then(this.initBoard);
+  }
+
+  ngOnInit() {
+  }
+
+  initBoard = (loading: HTMLIonLoadingElement) => {
+    loading.present();
+    this.boardsService.findByUid(this.userUid, this.boardUid).toPromise().then(board => {
+      if (Object.keys(board).length > 1) {
+        this.boardsService.board = board;
+        this.loading = false;
+        this.listenForBoard();
+        this.listenForWinners();
+      } else {
+        this.alertController.create({
+          header: 'Lo sentimos :(',
+          message: 'El tablero que intentas visitar ya no existe',
+          buttons: [{
+            role: 'cancel',
+            text: 'Aceptar',
+            handler: () => {
+              this.navController.navigateRoot(['/dashboard'], { relativeTo: this.activatedRoute });
+            }
+          }]
+        }).then(alert => alert.present());
+      }
+      loading.dismiss();
     });
   }
 
   ngOnDestroy(): void {
-    this.updatingBoardSub.unsubscribe();
-    this.winnersSub.unsubscribe();
+    if (this.updatingBoardSub) {
+      this.updatingBoardSub.unsubscribe();
+      this.winnersSub.unsubscribe();
+    }
   }
 
   showActionSheet = async () => {
@@ -130,20 +151,19 @@ export class BoardPage implements OnInit, OnDestroy {
 
   startGame = async () => {
     await this.winnersService.empty(this.boardUid);
-    let initBoard = { status: 1 };
-    if (!this.resume) {
+    let initBoard = { status: BoardStatus.STARTED };
+    if (this.boardsService.board.status === BoardStatus.NEW || this.boardsService.board.status === BoardStatus.FINALIZED) {
       initBoard['currentDeck'] = this.cardsService.generateCurrentDeck();
     }
     this.boardsService.update(this.boardUid, initBoard).then(() => {
-      const timer$ = interval(1000);
-      this.playingBoardSub = timer$.subscribe((sec) => {
-        if (sec > 0 && sec % this.boardsService.board.timeLapse === 0) {
+      interval(1000)
+        .pipe(takeWhile(() => this.boardsService.board.status === BoardStatus.STARTED))
+        .subscribe((sec) => {
+          if (sec > 0 && sec % this.boardsService.board.timeLapse === 0) {
           this.boardsService.increaseCurrentCard(this.boardUid)
             .then(async () => {
               if (this.boardsService.board.currentCard >= 53) {
-                this.playingBoardSub.unsubscribe();
-                this.resume = false;
-                await this.boardsService.update(this.boardUid, { status: 0, currentCard: -1 });
+                await this.boardsService.update(this.boardUid, { status: BoardStatus.FINALIZED, currentCard: -1 });
               }
             })
             .catch(console.error)
@@ -153,14 +173,10 @@ export class BoardPage implements OnInit, OnDestroy {
   }
 
   pauseGame = async () => {
-    this.playingBoardSub.unsubscribe();
-    this.winnersSub.unsubscribe();
-    this.resume = true;
-    await this.boardsService.update(this.boardUid, { status: 0 });
+    await this.boardsService.update(this.boardUid, { status: BoardStatus.PAUSED });
   }
 
   clear = () => {
-    console.log("Board Page Clear");
     this.historySlides.clear();
     this.boardComponent.clear();
   }
@@ -185,8 +201,8 @@ export class BoardPage implements OnInit, OnDestroy {
       .subscribe(async (board: Board) => {
         if (this.boardsService.board.status !== board.status) {
           // Status change
-          if (board.status === 1) {
-            console.log("status 1");
+          if ((this.boardsService.board.status === BoardStatus.NEW ||
+            this.boardsService.board.status === BoardStatus.FINALIZED) && board.status === BoardStatus.STARTED) {
             this.clear();
           }
         }
@@ -206,7 +222,8 @@ export class BoardPage implements OnInit, OnDestroy {
 
   generateCurrentBoard = () => this.boardComponent.generateCurrentBoard();
 
-  showMessagesPopover = (event) => this.popoverController.create({ component: MessagesComponent, event })
-    .then(popover => popover.present())
+  canPlay = () => this.boardsService.board.status !== BoardStatus.STARTED;
+
+  canPause = () => this.boardsService.board.status === BoardStatus.STARTED;
 
 }

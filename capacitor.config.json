@@ -1,6 +1,6 @@
 {
   "appId": "com.bucketdev.loteriamexicana",
-  "appName": "loteria-mexicana",
+  "appName": "Loteria Mexicana",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

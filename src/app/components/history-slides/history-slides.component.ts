@@ -3,6 +3,7 @@ import {IonSlides} from '@ionic/angular';
 import {Card} from '../../models/card.class';
 import {CardsService} from '../../services/cards.service';
 import {BoardsService} from '../../services/boards.service';
+import {BoardStatus} from "../../models/board-status.enum";
 
 @Component({
   selector: 'app-history-slides',
@@ -18,6 +19,9 @@ export class HistorySlidesComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.boardsService.board.status === BoardStatus.NEW) {
+      this.clear();
+    }
   }
 
   addCards = async (currentCard: number) => {

@@ -23,7 +23,7 @@ export class ProfilePage implements OnInit {
   user: User;
   isCurrentUser: boolean;
 
-  constructor(private fireAuth: FireAuthService,
+  constructor(public fireAuth: FireAuthService,
               private usersService: UsersService,
               private activatedRoute: ActivatedRoute,
               private afStorage: AngularFireStorage,

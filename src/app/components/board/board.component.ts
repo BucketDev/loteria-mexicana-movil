@@ -4,13 +4,14 @@ import {Card} from '../../models/card.class';
 import {BoardsService} from '../../services/boards.service';
 import {WinnersService} from '../../services/winners.service';
 import {StorageService} from "../../services/storage.service";
+import {BoardStatus} from "../../models/board-status.enum";
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit{
 
   @Input() boardUid: string;
   @Input() userUid: string;
@@ -21,13 +22,16 @@ export class BoardComponent implements OnInit {
   constructor(private storage: StorageService,
               private cardsService: CardsService,
               private boardsService: BoardsService,
-              private winnersService: WinnersService) { }
+              private winnersService: WinnersService) {
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.storage.get(this.boardUid).then((value) => {
-      if (value == null) {
-        this.currentBoard = this.cardsService.generateCurrentBoard();
-        this.storage.set(this.boardUid, this.currentBoard);
+      if (this.boardsService.board.status === BoardStatus.NEW && this.currentBoard) {
+        this.clear();
+      }
+      if (value === null) {
+        this.generateCurrentBoard();
       } else {
         this.currentBoard = value;
       }
@@ -35,8 +39,8 @@ export class BoardComponent implements OnInit {
   }
 
   generateCurrentBoard = () => {
-    this.currentBoard.forEach((card: Card) => card.selected = false);
     this.currentBoard = this.cardsService.generateCurrentBoard();
+    this.currentBoard.forEach((card: Card) => card.selected = false);
     this.storage.set(this.boardUid, this.currentBoard);
   }
 
@@ -46,15 +50,12 @@ export class BoardComponent implements OnInit {
     this.currentBoard.find((boardCard: Card) => boardCard.index === card.index).selected = true;
     this.storage.set(this.boardUid, this.currentBoard);
     if (!this.isWinnerBoard && this.winningBoard()) {
-      this.winnersService.addWinningPlayer(this.userUid, this.boardUid);
-      this.isWinnerBoard = true;
+      this.winnersService.addWinningPlayer(this.userUid, this.boardUid).then(() => this.isWinnerBoard = true);
     }
   }
 
   clear = () => {
-    console.log("Board Component Clear", this.currentBoard.filter(card => card.selected));
-    this.cardsService.clearCards();
-    console.log("Board Component Clear", this.currentBoard.filter(card => card.selected));
+    this.currentBoard.forEach(card => card.selected = false);
     this.isWinnerBoard = false;
   }
 

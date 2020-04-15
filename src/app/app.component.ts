@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import {Platform, ToastController} from '@ionic/angular';
+import {Platform} from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import {FireAuthService} from './services/security/fire-auth.service';
@@ -21,13 +21,10 @@ export class AppComponent {
               private fireAuth: FireAuthService,
               private messagingService: MessagingService) {
     this.fireAuth.$userRetrieved.subscribe((userExists: boolean) => {
-      // this.showNavbar = value;
       this.initializeApp();
       this.loading = false;
-      if (userExists) {
+      if (userExists && this.platform.is('capacitor')) {
         this.messagingService.getPermission();
-        this.messagingService.monitorRefresh();
-        this.messagingService.receiveMessages();
       }
     });
   }
@@ -38,4 +35,5 @@ export class AppComponent {
       this.splashScreen.hide();
     });
   }
+
 }

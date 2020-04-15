@@ -1,9 +1,10 @@
 import {firestore} from 'firebase/app';
+import {BoardStatus} from "./board-status.enum";
 
 export class Board {
     public uid: string;
     public title: string;
-    public status: number;
+    public status: BoardStatus;
     public currentCard: number;
     public currentDeck: number[];
     public creationDate: Date | firestore.Timestamp;
@@ -13,7 +14,7 @@ export class Board {
 
     constructor(title: string) {
         this.title = title;
-        this.status = 0;
+        this.status = BoardStatus.NEW;
         this.currentCard = -1;
         this.currentDeck = [];
         this.timeLapse = 3;

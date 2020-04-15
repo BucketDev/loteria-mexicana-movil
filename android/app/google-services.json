@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1090882992648",
+    "firebase_url": "https://ionic-loteria-mexicana.firebaseio.com",
+    "project_id": "ionic-loteria-mexicana",
+    "storage_bucket": "ionic-loteria-mexicana.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090882992648:android:1ed589f17f840c9f566fbd",
+        "android_client_info": {
+          "package_name": "com.bucketdev.loteriamexicana"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090882992648-rs0ouf51vp57t711ehuf484im8l852ho.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWVqJ1xuLylgUpFUCQuB7wvOF6ZXhvtEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090882992648-rs0ouf51vp57t711ehuf484im8l852ho.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

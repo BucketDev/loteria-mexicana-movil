@@ -7,13 +7,13 @@ import {
   PopoverController,
   ToastController
 } from "@ionic/angular";
-import {NotificationPopoverComponent} from "../../components/notification-popover/notification-popover.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Board} from "../../models/board.class";
 import {NewBoardPage} from "../modal/new-board/new-board.page";
 import {BoardsService} from "../../services/boards.service";
 import {FireAuthService} from "../../services/security/fire-auth.service";
 import {Subscription} from "rxjs";
+import {NotificationsService} from "../../services/notifications.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +24,8 @@ export class DashboardPage {
 
   boards: Board[];
   boardsSub: Subscription;
+  notificationsSub: Subscription;
+  notificationsUnread: number;
   loading = true;
 
   constructor(public boardsService: BoardsService,
@@ -35,14 +37,8 @@ export class DashboardPage {
               private loadingController: LoadingController,
               private toastController: ToastController,
               private navController: NavController,
-              private activatedRoute: ActivatedRoute) { }
-
-  showNotifications = (event: MouseEvent) => {
-    this.popoverController.create({
-      component: NotificationPopoverComponent,
-      event
-    }).then(popover => popover.present());
-  }
+              private activatedRoute: ActivatedRoute,
+              private notificationsService: NotificationsService) { }
 
   ngOnInit(): void {
     this.loading = true;
@@ -50,10 +46,14 @@ export class DashboardPage {
       this.loading = false;
       this.boards = boards;
     });
+    this.notificationsSub = this.notificationsService.getUnreadNumber().subscribe((notifications) => {
+      this.notificationsUnread = notifications;
+    });
   }
 
   ngOnDestroy() {
     this.boardsSub.unsubscribe();
+    this.notificationsSub.unsubscribe();
   }
 
   showModalBoard = async () => {
@@ -97,5 +97,8 @@ export class DashboardPage {
 
   showFriendsPage = () => this.navController
     .navigateForward(['../friends'], { relativeTo: this.activatedRoute });
+
+  showNotificationsPage = () => this.navController
+    .navigateForward(['../notifications'], { relativeTo: this.activatedRoute });
 
 }

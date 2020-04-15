@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {AngularFireMessaging} from '@angular/fire/messaging';
-import {FireAuthService} from './security/fire-auth.service';
-import {User as FireBaseUser} from 'firebase';
 import {UsersService} from './users.service';
 import {LotteryUser} from '../models/lottery-user.class';
-import {ToastController} from '@ionic/angular';
+import {AlertController, NavController, ToastController} from '@ionic/angular';
+
+import {
+  Plugins,
+  PushNotification,
+  PushNotificationToken,
+  PushNotificationActionPerformed} from '@capacitor/core';
+
+const { PushNotifications, Modals } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -14,52 +20,66 @@ export class MessagingService {
 
   currentMessage = new BehaviorSubject(null);
 
-  constructor(private afMessaging: AngularFireMessaging,
-              private usersService: UsersService,
-              private toastController: ToastController) {
-    afMessaging.messaging.subscribe(messaging => {
-      messaging.onMessage.bind(messaging);
-    });
-  }
+  constructor(private usersService: UsersService,
+              private toastController: ToastController,
+              private alertController: AlertController,
+              private navController: NavController) { }
 
   getPermission() {
-    this.afMessaging.requestPermission.toPromise()
-      .then(() => {
-        this.afMessaging.getToken.subscribe((token: string) => {
-          if (token) {
-            this.saveToken(token);
-          }
-        }, error => console.error('Unable to get token', error));
-      })
-      .catch(error => console.error('Permission denied!', error));
-  }
 
-  monitorRefresh = () => {
-    this.afMessaging.tokenChanges.subscribe(() => {
-      this.afMessaging.getToken.subscribe((token: string) => {
-        if (token) {
-          this.saveToken(token);
-        }
-      }, error => console.error(error, 'Unable to get token'));
+    // Register with Apple / Google to receive push via APNS/FCM
+    PushNotifications.register();
+
+    // On succcess, we should be able to receive notifications
+    PushNotifications.addListener('registration',
+      (token: PushNotificationToken) => this.saveToken(token.value));
+
+    // Some issue with our setup and push will not work
+    PushNotifications.addListener('registrationError',
+      (error: any) => {
+        this.toastController.create({
+          message: 'Ocurrió un erro al registrar el dispositivo, intentalo mas tarde',
+          color: 'danger',
+          duration: 3000
+        }).then(toast => toast.present())
+      }
+    );
+
+    // Show us the notification payload if the app is open on our device
+    PushNotifications.addListener('pushNotificationReceived',
+      (notification: PushNotification) => {
+        this.toastController.create({
+          message: notification.body,
+          buttons: [{
+            text: 'Jugar',
+            side: 'end',
+            handler: () => {
+              const {userUid, boardUid} = notification.notification.data;
+              this.showBoard(userUid, boardUid);
+            }
+          }]
+        }).then(toast => toast.present());
+      }
+    );
+
+    // Method called when tapping on a notification
+    PushNotifications.addListener('pushNotificationActionPerformed',
+      async (notification: PushNotificationActionPerformed) => {
+      const {userUid, boardUid} = notification.notification.data;
+      await this.showBoard(userUid, boardUid);
     });
+
   }
 
   saveToken = (token: string) => {
-    this.usersService.find().toPromise()
-      .then(async (lotteryUser: LotteryUser) => {
-        const currentTokens = lotteryUser.fcmTokens || {};
-        if (!currentTokens[token]) {
-          this.usersService.updateFCMToken({...currentTokens, [token]: true})
-            .catch(console.error);
-        }
-      })
-      .catch(console.error);
-  }
-
-  receiveMessages = () => {
-    this.afMessaging.messages.subscribe((payload) => {
-      console.log('new message received. ', payload);
-      this.currentMessage.next(payload);
+    this.usersService.find().subscribe(async (lotteryUser: LotteryUser) => {
+      const currentTokens = lotteryUser.fcmTokens || {};
+      if (!currentTokens[token]) {
+        this.usersService.updateFCMToken({...currentTokens, [token]: true})
+          .catch(console.error);
+      }
     });
   }
+
+  showBoard = (userUid: string, boardUid: string) => this.navController.navigateForward(`/board/${userUid}/${boardUid}`);
 }
