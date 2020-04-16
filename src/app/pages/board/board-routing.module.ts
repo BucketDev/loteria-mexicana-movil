@@ -5,7 +5,8 @@ import { BoardPage } from './board.page';
 
 const routes: Routes = [
   { path: ':userUid/:uid', component: BoardPage },
-  { path: '**', redirectTo: 'dashboard/home', pathMatch: 'full' },
+  { path: ':userUid/:uid/messages', loadChildren: () => import('./messages/messages.module').then( m => m.MessagesPageModule) },
+  { path: '**', redirectTo: '/dashboard/home', pathMatch: 'full' },
 ];
 
 @NgModule({

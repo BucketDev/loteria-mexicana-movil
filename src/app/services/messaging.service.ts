@@ -49,7 +49,7 @@ export class MessagingService {
     PushNotifications.addListener('pushNotificationReceived',
       (notification: PushNotification) => {
         this.toastController.create({
-          message: notification.body,
+          message: JSON.stringify(notification.notification.data),
           buttons: [{
             text: 'Jugar',
             side: 'end',
@@ -66,6 +66,7 @@ export class MessagingService {
     PushNotifications.addListener('pushNotificationActionPerformed',
       async (notification: PushNotificationActionPerformed) => {
       const {userUid, boardUid} = notification.notification.data;
+      console.log(JSON.stringify(notification.notification.data))
       await this.showBoard(userUid, boardUid);
     });
 

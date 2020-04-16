@@ -11,10 +11,10 @@
       <ion-button *ngIf="isCreator && canPause()" (click)="pauseGame()">
         <ion-icon name="pause-outline" color="dark"></ion-icon>
       </ion-button>
-      <!--<ion-button (click)="showMessagesPopover($event)">
-        <ion-icon color="dark" slot="icon-only" name="chatbox"></ion-icon>
-      </ion-button>-->
-      <ion-button (click)="showActionSheet()" [disabled]="boardsService.board?.status > 0">
+      <ion-button (click)="showMessagesPage()">
+        <ion-icon color="dark" slot="icon-only" name="chatbox-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="showActionSheet()" [disabled]="boardsService.board?.status === 1">
         <ion-icon color="dark" slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>

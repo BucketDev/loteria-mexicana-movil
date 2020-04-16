@@ -226,4 +226,7 @@ export class BoardPage implements OnInit, OnDestroy {
 
   canPause = () => this.boardsService.board.status === BoardStatus.STARTED;
 
+  showMessagesPage = () => this.navController.navigateForward(['messages'],
+    { relativeTo: this.activatedRoute, state: {userUid: this.userUid, boardUid: this.boardUid} })
+
 }

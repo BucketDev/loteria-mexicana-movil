@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="dark">Mensajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-progress-bar color="warning" type="indeterminate" *ngIf="loading; else notLoading"></ion-progress-bar>
+  <ng-template #notLoading>
+    <app-empty-records *ngIf="messages.length === 0" title="No hay mensajes por mostrar"
+                       subtitle="Todavia no tienes mensajes, intenta iniciar la conversación"
+                       icon="chat"></app-empty-records>
+    <app-empty-records *ngIf="infiniteScroll.disabled" [mini]="true"
+                       title="No hay mas mensajes" icon="chat"></app-empty-records>
+    <ion-infinite-scroll threshold="10%" (ionInfinite)="getNext($event)" #infiniteScroll position="top">
+      <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Buscando mensajes"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+    <ion-list lines="none">
+      <ion-item *ngFor="let message of messages">
+        <ion-label class="ion-padding lm-message ion-text-wrap"
+                   [ngClass]="{'lm-message-author': message.userUid === fireAuth.lotteryUser.uid,
+                   'lm-message-friend': message.userUid !== fireAuth.lotteryUser.uid}">
+          <p>{{message.displayName}}</p>
+          {{message.text}}
+        </ion-label>
+        <ion-note [slot]="message.userUid === fireAuth.lotteryUser.uid ? 'start' : 'end'">
+          {{message.creationDate.toDate() | date: 'short'}}
+        </ion-note>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+</ion-content>
+<ion-footer>
+  <form [formGroup]="formMessageGroup">
+    <ion-toolbar color="warning">
+        <ion-item color="light" class="ion-margin-horizontal">
+          <ion-icon slot="start" name="chatbox-ellipses-outline"></ion-icon>
+          <ion-input formControlName="message"></ion-input>
+        </ion-item>
+        <ion-buttons slot="end">
+          <ion-button [disabled]="formMessageGroup.invalid" (click)="addMessage()">
+            <ion-icon color="dark" name="send" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+  </form>
+</ion-footer>
