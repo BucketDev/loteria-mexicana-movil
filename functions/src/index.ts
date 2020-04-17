@@ -1,7 +1,5 @@
 import * as functions from 'firebase-functions';
 import * as admin from "firebase-admin";
-import {interval} from "rxjs";
-import {takeWhile} from "rxjs/operators";
 
 admin.initializeApp();
 
@@ -63,7 +61,7 @@ exports.sendInvitePlayers = functions.firestore.document('users/{uid}/boards/{bo
                       title: '¡Corre y se va corriendo!',
                       body: `${userData.displayName} te ha invitado a jugar Lotería Mexicana`
                     },
-                    data: { uid, boardUid }
+                    data: { userUid: uid, boardUid }
                   };
                   return admin.messaging().sendToDevice(tokens, payload).catch(console.error)
                 })

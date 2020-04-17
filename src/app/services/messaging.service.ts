@@ -46,27 +46,27 @@ export class MessagingService {
     );
 
     // Show us the notification payload if the app is open on our device
-    PushNotifications.addListener('pushNotificationReceived',
-      (notification: PushNotification) => {
-        this.toastController.create({
-          message: JSON.stringify(notification.notification.data),
-          buttons: [{
-            text: 'Jugar',
-            side: 'end',
-            handler: () => {
-              const {userUid, boardUid} = notification.notification.data;
-              this.showBoard(userUid, boardUid);
-            }
-          }]
-        }).then(toast => toast.present());
-      }
-    );
+    PushNotifications.addListener('pushNotificationReceived', (notification: PushNotification) => {
+      this.toastController.create({
+        message: notification.body,
+        buttons: [{
+          text: 'Jugar',
+          side: 'end',
+          handler: () => {
+            const {userUid, boardUid} = notification.data;
+            this.showBoard(userUid, boardUid);
+          }
+        }, {
+          text: 'Cerrar',
+          role: 'cancel'
+        }]
+      }).then(toast => toast.present());
+    });
 
     // Method called when tapping on a notification
     PushNotifications.addListener('pushNotificationActionPerformed',
       async (notification: PushNotificationActionPerformed) => {
       const {userUid, boardUid} = notification.notification.data;
-      console.log(JSON.stringify(notification.notification.data))
       await this.showBoard(userUid, boardUid);
     });
 

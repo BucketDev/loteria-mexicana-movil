@@ -26,7 +26,7 @@ export class MessagesPage implements OnInit {
 
   constructor(private messagesService: MessagesService,
               private router: Router,
-              private fireAuth: FireAuthService) {
+              public fireAuth: FireAuthService) {
     this.formMessageGroup = new FormGroup({
       message: new FormControl('', Validators.required)
     });
