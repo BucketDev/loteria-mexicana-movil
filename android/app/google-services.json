@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "1090882992648-h8s2s0rigar2bkv2smjkq33tnkih7u8k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bucketdev.loteriamexicana",
+            "certificate_hash": "baa61c38e6f9b4198f0999a83ff2556328ac4bfe"
+          }
+        },
+        {
+          "client_id": "1090882992648-dqmqcm4emolv1e3624mprgeqnv9kem19.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bucketdev.loteriamexicana",
+            "certificate_hash": "fe6c278eacb3863e75b2605114f899b7f0be9e21"
+          }
+        },
+        {
           "client_id": "1090882992648-rs0ouf51vp57t711ehuf484im8l852ho.apps.googleusercontent.com",
           "client_type": 3
         }

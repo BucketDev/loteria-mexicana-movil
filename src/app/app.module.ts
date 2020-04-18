@@ -23,7 +23,7 @@ import {AngularFireStorageModule} from "@angular/fire/storage";
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebase, 'loteria-mexicana'),
+    AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireFunctionsModule,

@@ -8,11 +8,11 @@
     </ion-card-header>
     <ion-card-content class="ion-no-padding">
       <router-outlet></router-outlet>
-      <ion-button size="block" color="primary" (click)="login()" class="ion-margin">
+      <ion-button size="block" color="primary" (click)="facebookLogin()" class="ion-margin">
         <ion-icon name="logo-facebook" slot="start"></ion-icon>
         Ingresar con Facebook
       </ion-button>
-      <ion-button size="block" color="danger" (click)="login()" class="ion-margin">
+      <ion-button size="block" color="danger" (click)="googleLogin()" class="ion-margin">
         <ion-icon name="logo-google" slot="start"></ion-icon>
         Ingresar con Google
       </ion-button>

@@ -15,6 +15,8 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
-  login = () => this.auth.googleLogin();
+  googleLogin = () => this.auth.googleLogin();
+
+  facebookLogin = () => this.auth.facebookLogin();
 
 }

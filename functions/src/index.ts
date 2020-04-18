@@ -1,13 +1,15 @@
 import * as functions from 'firebase-functions';
 import * as admin from "firebase-admin";
+import UserRecord = admin.auth.UserRecord;
 
 admin.initializeApp();
 
 exports.createUser = functions.auth.user().onCreate((userRecord, context) => {
+  const userInfo = getUserInfo(userRecord);
   return admin.firestore().doc(`/users/${userRecord.uid}`).set({
-    displayName: userRecord.displayName === null ? userRecord.email : userRecord.displayName,
-    email: userRecord.email,
-    photoURL: userRecord.photoURL === null ? 'https://img.icons8.com/bubbles/256/gender-neutral-user' : userRecord.photoURL,
+    displayName: userInfo.displayName,
+    email: userInfo.email,
+    photoURL: userInfo.photoURL,
     firstPlaces: 0,
     secondPlaces: 0,
     thirdPlaces: 0,
@@ -17,6 +19,25 @@ exports.createUser = functions.auth.user().onCreate((userRecord, context) => {
     creationDate: new Date()
   });
 });
+
+const getUserInfo = (userRecord: UserRecord): {email: string, displayName: string, photoURL: string} => {
+  const providerData = userRecord.providerData[0];
+  const userInfo = { displayName: '', email: '', photoURL: '' };
+  switch (providerData.providerId) {
+    case 'password':
+      userInfo.email = providerData.email;
+      userInfo.displayName = providerData.email;
+      userInfo.photoURL = 'https://img.icons8.com/bubbles/256/gender-neutral-user';
+      break;
+    case  'facebook.com':
+    case 'google.com':
+      userInfo.email = providerData.email;
+      userInfo.displayName = providerData.displayName;
+      userInfo.photoURL = providerData.photoURL;
+      break;
+  }
+  return userInfo;
+}
 
 exports.sendInvitePlayers = functions.firestore.document('users/{uid}/boards/{boardUid}/players/{playerUid}')
   .onCreate((snap, context) => {
