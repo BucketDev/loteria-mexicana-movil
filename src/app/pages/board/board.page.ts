@@ -24,6 +24,9 @@ import {Card} from "../../models/card.class";
 import {Winner} from "../../models/winner.class";
 import {takeWhile} from "rxjs/operators";
 import {BoardStatus} from "../../models/board-status.enum";
+import {Message} from "../../models/message.class";
+import {MessagesService} from "../../services/messages.service";
+import {firestore} from 'firebase/app';
 
 @Component({
   selector: 'app-board-page',
@@ -36,13 +39,16 @@ export class BoardPage implements OnInit, OnDestroy {
   @ViewChild(BoardComponent, {static: false}) boardComponent: BoardComponent;
   updatingBoardSub: Subscription;
   winnersSub: Subscription;
+  messagesSub: Subscription;
   isCreator: boolean;
   boardUid: string;
   userUid: string;
   loading = true;
+  lastMessageDate: firestore.Timestamp;
 
   constructor(public boardsService: BoardsService,
               private winnersService: WinnersService,
+              private messagesService: MessagesService,
               private cardsService: CardsService,
               private activatedRoute: ActivatedRoute,
               private auth: FireAuthService,
@@ -65,14 +71,16 @@ export class BoardPage implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
-  initBoard = (loading: HTMLIonLoadingElement) => {
-    loading.present();
+  initBoard = async (loading: HTMLIonLoadingElement) => {
+    await loading.present();
     this.boardsService.findByUid(this.userUid, this.boardUid).toPromise().then(board => {
       if (Object.keys(board).length > 1) {
         this.boardsService.board = board;
         this.loading = false;
         this.listenForBoard();
-        this.listenForWinners();
+        if (board.status !== BoardStatus.FINALIZED) {
+          this.listenForWinners();
+        }
       } else {
         this.alertController.create({
           header: 'Lo sentimos :(',
@@ -91,20 +99,24 @@ export class BoardPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.updatingBoardSub) {
-      this.updatingBoardSub.unsubscribe();
-      this.winnersSub.unsubscribe();
-    }
+    this.updatingBoardSub && this.updatingBoardSub.unsubscribe();
+    this.winnersSub && this.winnersSub.unsubscribe();
+  }
+
+  ionViewDidEnter() {
+    this.lastMessageDate = firestore.Timestamp.fromDate(new Date());
+    this.listenForMessages();
+  }
+
+  ionViewWillLeave() {
+    this.messagesSub.unsubscribe();
   }
 
   showActionSheet = async () => {
     const buttons = [{
       text: 'Cerrar',
       role: 'cancel',
-      icon: 'close-circle',
-      handler: () => {
-        console.log('Delete clicked');
-      }
+      icon: 'close-circle'
     }, {
       text: 'Ver jugadores',
       icon: 'people',
@@ -213,6 +225,30 @@ export class BoardPage implements OnInit, OnDestroy {
         this.boardsService.board = board;
       });
   }
+
+  listenForMessages = () => this.messagesSub =
+    this.messagesService.findLastMessage(this.userUid, this.boardUid, this.lastMessageDate)
+    .subscribe(async (message: Message) => {
+      if (message) {
+        this.lastMessageDate = message.creationDate as firestore.Timestamp;
+        const toast = await this.toastController.getTop();
+        if (toast) {
+          await this.toastController.dismiss();
+        }
+        this.toastController.create({
+          message: `<strong>${message.displayName}:</strong> ${message.text}`,
+          duration: 3000,
+          buttons: [{
+            text: 'Ver',
+            handler: this.showMessagesPage
+          }, {
+            text: 'Cerrar',
+            role: 'cancel'
+          }]
+        }).then(toast => toast.present());
+      }
+  });
+
 
   cardSelected = (card: Card) => {
     if (this.historySlides.isCardSelectable(card)) {
