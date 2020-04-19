@@ -4,11 +4,8 @@
       <ion-back-button defaultHref="/dashboard" color="dark"></ion-back-button>
     </ion-buttons>
     <ion-buttons *ngIf="!loading" class="lm-board-actions">
-      <ion-button *ngIf="isCreator && canPlay()" (click)="startGame()">
+      <ion-button *ngIf="isCreator" [disabled]="!canPlay()" (click)="startGame()">
         <ion-icon name="play" color="dark"></ion-icon>
-      </ion-button>
-      <ion-button *ngIf="isCreator && canPause()" (click)="pauseGame()">
-        <ion-icon name="pause" color="dark"></ion-icon>
       </ion-button>
       <ion-button (click)="showMessagesPage()">
         <ion-icon color="dark" slot="icon-only" name="chatbox"></ion-icon>
@@ -22,13 +19,13 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-progress-bar color="dark" *ngIf="!loading"
-                    [value]="boardsService.board.currentCard / boardsService.board.currentDeck.length"></ion-progress-bar>
+                    [value]="boardsService.currentCard / boardsService.board.currentDeck.length"></ion-progress-bar>
 </ion-header>
 <ion-content color="warning">
   <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>
   <ng-template #notLoading>
     <app-history-slides slot="fixed" class="lm-history-container"></app-history-slides>
-    <app-board  *ngIf="boardsService.board"
-                [boardUid]="boardUid" [userUid]="userUid" (cardSelectedEvent)="cardSelected($event)"></app-board>
+    <app-board *ngIf="boardsService.board" [maxWidth]="maxWidth" [maxHeight]="maxHeight"
+               [boardUid]="boardUid" [userUid]="userUid" (cardSelectedEvent)="cardSelected($event)"></app-board>
   </ng-template>
 </ion-content>

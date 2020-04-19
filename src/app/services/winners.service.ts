@@ -47,7 +47,8 @@ export class WinnersService {
 
   getWinnersByUserAndBoard = (userUid: string, uid: string) => this.db.collection(this.collectionUsersName).doc(userUid)
     .collection(this.collectionBoardsName).doc(uid)
-    .collection(this.collectionName, ref => ref.orderBy('creationDate', 'asc'))
+    .collection(this.collectionName, ref => ref.where('creationDate', '>=', firestore.Timestamp.now())
+      .orderBy('creationDate', 'asc'))
     .snapshotChanges().pipe(map((actions) => {
       let winner: Winner;
       actions.forEach((action: DocumentChangeAction<Winner>) => {

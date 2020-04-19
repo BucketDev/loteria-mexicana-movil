@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BoardsService} from '../../services/boards.service';
 import {ActivatedRoute} from '@angular/router';
 import {
   ActionSheetController,
-  AlertController,
+  AlertController, IonContent,
   LoadingController,
   ModalController,
   NavController,
@@ -16,7 +16,6 @@ import {CardsService} from '../../services/cards.service';
 import {BoardSettingsPage} from '../modal/board-settings/board-settings.page';
 import {WinnersService} from '../../services/winners.service';
 import {WinnersPage} from '../modal/winners/winners.page';
-import {PlayersPage} from './players/players.page';
 import {HistorySlidesComponent} from "../../components/history-slides/history-slides.component";
 import {BoardComponent} from "../../components/board/board.component";
 import {Board} from "../../models/board.class";
@@ -45,6 +44,9 @@ export class BoardPage implements OnInit, OnDestroy {
   userUid: string;
   loading = true;
   lastMessageDate: firestore.Timestamp;
+  @ViewChild(IonContent, { static: false }) boardContent: IonContent;
+  maxWidth: number;
+  maxHeight: number;
 
   constructor(public boardsService: BoardsService,
               private winnersService: WinnersService,
@@ -78,9 +80,7 @@ export class BoardPage implements OnInit, OnDestroy {
         this.boardsService.board = board;
         this.loading = false;
         this.listenForBoard();
-        if (board.status !== BoardStatus.FINALIZED) {
-          this.listenForWinners();
-        }
+        this.listenForWinners();
       } else {
         this.alertController.create({
           header: 'Lo sentimos :(',
@@ -106,6 +106,12 @@ export class BoardPage implements OnInit, OnDestroy {
   ionViewDidEnter() {
     this.lastMessageDate = firestore.Timestamp.fromDate(new Date());
     this.listenForMessages();
+    this.boardContent.getScrollElement()
+      .then((element) => {
+        const remainingHeight = element.clientHeight - 112;
+        this.maxWidth = remainingHeight / 1.5;
+        this.maxHeight = element.clientHeight - 136;
+      })
   }
 
   ionViewWillLeave() {
@@ -152,25 +158,8 @@ export class BoardPage implements OnInit, OnDestroy {
 
   startGame = async () => {
     await this.winnersService.empty(this.boardUid);
-    let initBoard = { status: BoardStatus.STARTED };
-    if (this.boardsService.board.status === BoardStatus.NEW || this.boardsService.board.status === BoardStatus.FINALIZED) {
-      initBoard['currentDeck'] = this.cardsService.generateCurrentDeck();
-    }
-    this.boardsService.update(this.boardUid, initBoard).then(() => {
-      interval(1000)
-        .pipe(takeWhile(() => this.boardsService.board.status === BoardStatus.STARTED))
-        .subscribe((sec) => {
-          if (sec > 0 && sec % this.boardsService.board.timeLapse === 0) {
-          this.boardsService.increaseCurrentCard(this.boardUid)
-            .then(async () => {
-              if (this.boardsService.board.currentCard >= 53) {
-                await this.boardsService.update(this.boardUid, { status: BoardStatus.FINALIZED, currentCard: -1 });
-              }
-            })
-            .catch(console.error)
-        }
-      });
-    });
+    let initBoard = { status: BoardStatus.STARTED, currentDeck: this.cardsService.generateCurrentDeck() };
+    await this.boardsService.update(this.boardUid, initBoard);
   }
 
   pauseGame = async () => {
@@ -197,16 +186,14 @@ export class BoardPage implements OnInit, OnDestroy {
 
   listenForBoard = () => this.updatingBoardSub = this.boardsService.listenForUpdates(this.userUid, this.boardUid)
       .subscribe(async (board: Board) => {
+        // Status changed
         if (this.boardsService.board.status !== board.status) {
-          // Status change
-          if ((this.boardsService.board.status === BoardStatus.NEW ||
-            this.boardsService.board.status === BoardStatus.FINALIZED) && board.status === BoardStatus.STARTED) {
+          if (board.status === BoardStatus.STARTED) {
             this.clear();
+            this.dealCards();
+          } else if (board.status === BoardStatus.FINALIZED) {
+
           }
-        }
-        if (board.currentCard >= 0 && this.boardsService.board.currentCard !== board.currentCard) {
-          // card change
-          await this.historySlides.addCards(board.currentCard);
         }
         this.boardsService.board = board;
       });
@@ -234,6 +221,23 @@ export class BoardPage implements OnInit, OnDestroy {
       }
   });
 
+  dealCards = () => {
+    this.boardsService.currentCard = -1;
+    interval(1000)
+      .pipe(takeWhile(() => this.boardsService.board.status === BoardStatus.STARTED))
+      .subscribe(async (sec) => {
+        if (sec > 0 && sec % this.boardsService.board.timeLapse === 0) {
+          this.boardsService.currentCard++;
+          if (this.boardsService.currentCard < this.boardsService.board.currentDeck.length) {
+            this.historySlides.addCards();
+          } else {
+            if (this.isCreator) {
+              await this.boardsService.update(this.boardUid, { status: BoardStatus.FINALIZED });
+            }
+          }
+        }
+      });
+  }
 
   cardSelected = (card: Card) => {
     if (this.historySlides.isCardSelectable(card)) {
@@ -244,8 +248,6 @@ export class BoardPage implements OnInit, OnDestroy {
   generateCurrentBoard = () => this.boardComponent.generateCurrentBoard();
 
   canPlay = () => this.boardsService.board.status !== BoardStatus.STARTED;
-
-  canPause = () => this.boardsService.board.status === BoardStatus.STARTED;
 
   showMessagesPage = () => this.navController.navigateForward(['messages'],
     { relativeTo: this.activatedRoute, state: { userUid: this.userUid, boardUid: this.boardUid } })

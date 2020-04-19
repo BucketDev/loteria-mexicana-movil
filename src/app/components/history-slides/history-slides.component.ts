@@ -24,8 +24,21 @@ export class HistorySlidesComponent implements OnInit {
     }
   }
 
-  addCards = async (currentCard: number) => {
-    for (let idx = this.historyCards.length; idx <= currentCard; idx++) {
+  getBoardStatus = () => {
+    switch (this.boardsService.board.status) {
+      case BoardStatus.NEW:
+      case BoardStatus.FINALIZED:
+        return 'Juego por comenzar';
+      case BoardStatus.STARTED:
+        return 'Juego iniciado, por favor espere'
+      case BoardStatus.PAUSED:
+      default:
+        return null;
+    }
+  }
+
+  addCards = () => {
+    for (let idx = this.historyCards.length; idx <= this.boardsService.currentCard; idx++) {
       const indexDeck = this.boardsService.board.currentDeck[idx];
       this.historyCards.push(this.cardsService.cards[indexDeck]);
     }

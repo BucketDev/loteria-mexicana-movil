@@ -14,6 +14,7 @@ import {CardsService} from './cards.service';
 import {firestore} from 'firebase/app';
 import Timestamp = firestore.Timestamp;
 import {Message} from "../models/message.class";
+import {BoardStatus} from "../models/board-status.enum";
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,7 @@ export class BoardsService {
   private collectionWinnersName = '/winners';
   private collectionMessagesName = '/messages';
   public board: Board;
+  public currentCard: number;
 
   constructor(private db: AngularFirestore,
               private auth: FireAuthService,
@@ -66,9 +68,6 @@ export class BoardsService {
 
   update = (uid: string, updateObject: any) => this.db.collection(this.collectionUsersName).doc(this.auth.lotteryUser.uid)
     .collection(this.collectionName).doc(uid).update(updateObject)
-
-  increaseCurrentCard = (uid: string) => this.db.collection(this.collectionUsersName).doc(this.auth.lotteryUser.uid)
-    .collection(this.collectionName).doc(uid).update({ currentCard: this.board.currentCard + 1 })
 
   delete = async (boardUid: string) => {
     const batch = this.db.firestore.batch();

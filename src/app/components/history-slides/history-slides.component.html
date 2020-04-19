@@ -3,7 +3,7 @@
     <ion-col size="12" class="ion-text-center" *ngIf="historyCards.length === 0">
       <ion-chip color="warning">
         <ion-icon name="game-controller"></ion-icon>
-        <ion-label>Juego por comenzar</ion-label>
+        <ion-label>{{getBoardStatus()}}</ion-label>
       </ion-chip>
     </ion-col>
     <ion-col *ngFor="let card of historyCards | lastElements: 4" size="3">

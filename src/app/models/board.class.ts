@@ -5,7 +5,6 @@ export class Board {
     public uid: string;
     public title: string;
     public status: BoardStatus;
-    public currentCard: number;
     public currentDeck: number[];
     public creationDate: Date | firestore.Timestamp;
     public timeLapse: number;
@@ -15,7 +14,6 @@ export class Board {
     constructor(title: string) {
         this.title = title;
         this.status = BoardStatus.NEW;
-        this.currentCard = -1;
         this.currentDeck = [];
         this.timeLapse = 3;
         this.winStrategy = 0;

@@ -18,6 +18,8 @@ export class BoardComponent implements OnInit{
   currentBoard: Card[];
   @Output() cardSelectedEvent = new EventEmitter<Card>();
   isWinnerBoard = false;
+  @Input() maxWidth: number;
+  @Input() maxHeight: number;
 
   constructor(private storage: StorageService,
               private cardsService: CardsService,
@@ -75,7 +77,6 @@ export class BoardComponent implements OnInit{
           }
           if (columnComplete) { break; }
         }
-        console.log('Won?', columnComplete);
         return columnComplete;
       case 2:
         let rowsComplete = false;
@@ -89,7 +90,6 @@ export class BoardComponent implements OnInit{
           }
           if (rowsComplete) { break; }
         }
-        console.log('Won?', rowsComplete);
         return rowsComplete;
     }
   }

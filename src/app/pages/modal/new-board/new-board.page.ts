@@ -53,7 +53,7 @@ export class NewBoardPage implements OnInit {
         this.boardsService.addPlayers(document.id, players);
       })
       .catch(async (err) => {
-        console.log(err);
+        console.error(err);
         await this.modalController.dismiss();
       });
   }

@@ -30,7 +30,6 @@ export class FriendsComponent implements OnInit {
     usersService.find().subscribe((user: LotteryUser) => {
       this.user = user;
       this.user.friends = [];
-      console.log(this.players)
       if (this.players) {
         this.user.friendsRef = this.user.friendsRef.filter(friendRef =>
           !this.players.find(player => player.uid === friendRef.id));

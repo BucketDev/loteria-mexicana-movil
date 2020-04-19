@@ -5,8 +5,7 @@ import {Router} from "@angular/router";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {FireAuthService} from "../../../services/security/fire-auth.service";
 import {IonContent, IonInfiniteScroll} from "@ionic/angular";
-import {QueryDocumentSnapshot, QuerySnapshot} from "@angular/fire/firestore";
-import {Notification} from "../../../models/notification.class";
+import {QueryDocumentSnapshot} from "@angular/fire/firestore";
 
 @Component({
   selector: 'app-messages',
