@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
 import {LotteryUser} from '../../models/lottery-user.class';
 import {FriendsService} from '../../services/friends.service';
 import {IonCheckbox, NavController, ToastController} from '@ionic/angular';
 import {UsersService} from "../../services/users.service";
-import {DocumentData, DocumentReference, DocumentSnapshot} from "@angular/fire/firestore";
+import {DocumentSnapshot} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -11,14 +11,16 @@ import {ActivatedRoute} from "@angular/router";
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.scss'],
 })
-export class FriendsComponent {
+export class FriendsComponent implements OnInit {
 
   loading = true;
   user: LotteryUser;
   selectedFriends: LotteryUser[] = [];
   @Output() friendsLoaded = new EventEmitter<LotteryUser[]>();
+  @Input() players: LotteryUser[];
   @Input() deletableFriend = false;
   @Input() selectableFriend = true;
+  @ViewChildren(IonCheckbox) friendsCheckBox: QueryList<IonCheckbox>;
 
   constructor(private friendsService: FriendsService,
               private usersService: UsersService,
@@ -28,16 +30,22 @@ export class FriendsComponent {
     usersService.find().subscribe((user: LotteryUser) => {
       this.user = user;
       this.user.friends = [];
+      console.log(this.players)
+      if (this.players) {
+        this.user.friendsRef = this.user.friendsRef.filter(friendRef =>
+          !this.players.find(player => player.uid === friendRef.id));
+      }
       user.friendsRef.forEach(async friendRef => {
         const friendSnap: DocumentSnapshot<LotteryUser> = await friendRef.get() as DocumentSnapshot<LotteryUser>;
         const friend = friendSnap.data();
-        this.user.friends.push({...friend, uid: friendSnap.id});
+        this.user.friends.push({...friend, uid: friendSnap.id });
         this.friendsLoaded.emit(this.user.friends);
       })
-      this.friendsLoaded.emit(user.friends);
       this.loading = false;
     });
   }
+
+  ngOnInit() { }
 
   deleteFriend = (user: LotteryUser) =>
     this.friendsService.deleteFriend(user).then(() => {

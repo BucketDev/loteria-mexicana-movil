@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button (click)="modalController.dismiss()" color="warning">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title color="warning">Invita a un amigo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="warning" fill="solid" [disabled]="friendsComponent.selectedFriends.length === 0"
+                  (click)="addPlayers()">
+        <ion-label color="dark">Invitar</ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-friends [players]="players"></app-friends>
+</ion-content>

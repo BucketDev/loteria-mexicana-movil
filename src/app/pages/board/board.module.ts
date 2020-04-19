@@ -10,7 +10,7 @@ import { BoardPage } from './board.page';
 import {ComponentsModule} from '../../components/components.module';
 import {BoardSettingsPageModule} from '../modal/board-settings/board-settings.module';
 import {WinnersPageModule} from '../modal/winners/winners.module';
-import {BoardPlayersPageModule} from '../modal/board-players/board-players.module';
+import {PlayersPageModule} from './players/players.module';
 
 @NgModule({
   imports: [
@@ -21,7 +21,7 @@ import {BoardPlayersPageModule} from '../modal/board-players/board-players.modul
     ComponentsModule,
     BoardSettingsPageModule,
     WinnersPageModule,
-    BoardPlayersPageModule
+    PlayersPageModule
   ],
   declarations: [BoardPage]
 })

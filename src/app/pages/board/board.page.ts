@@ -16,7 +16,7 @@ import {CardsService} from '../../services/cards.service';
 import {BoardSettingsPage} from '../modal/board-settings/board-settings.page';
 import {WinnersService} from '../../services/winners.service';
 import {WinnersPage} from '../modal/winners/winners.page';
-import {BoardPlayersPage} from '../modal/board-players/board-players.page';
+import {PlayersPage} from './players/players.page';
 import {HistorySlidesComponent} from "../../components/history-slides/history-slides.component";
 import {BoardComponent} from "../../components/board/board.component";
 import {Board} from "../../models/board.class";
@@ -118,17 +118,6 @@ export class BoardPage implements OnInit, OnDestroy {
       role: 'cancel',
       icon: 'close-circle'
     }, {
-      text: 'Ver jugadores',
-      icon: 'people',
-      handler: () => {
-        this.modalController.create({
-          component: BoardPlayersPage,
-          componentProps: {
-            userUid: this.userUid
-          }
-        }).then((modal) => modal.present());
-      }
-    }, {
       text: 'Lista de ganadores',
       icon: 'trophy',
       handler: async () => {
@@ -193,8 +182,7 @@ export class BoardPage implements OnInit, OnDestroy {
     this.boardComponent.clear();
   }
 
-  listenForWinners = () => {
-    this.winnersSub = this.winnersService.getWinnersByUserAndBoard(this.userUid, this.boardUid)
+  listenForWinners = () =>this.winnersSub = this.winnersService.getWinnersByUserAndBoard(this.userUid, this.boardUid)
       .subscribe((winner: Winner) => {
         if (winner) {
           new Audio('assets/sounds/winner-found.mp3').play();
@@ -206,10 +194,8 @@ export class BoardPage implements OnInit, OnDestroy {
           }).then(toast => toast.present());
         }
       });
-  }
 
-  listenForBoard = () => {
-    this.updatingBoardSub = this.boardsService.listenForUpdates(this.userUid, this.boardUid)
+  listenForBoard = () => this.updatingBoardSub = this.boardsService.listenForUpdates(this.userUid, this.boardUid)
       .subscribe(async (board: Board) => {
         if (this.boardsService.board.status !== board.status) {
           // Status change
@@ -224,7 +210,6 @@ export class BoardPage implements OnInit, OnDestroy {
         }
         this.boardsService.board = board;
       });
-  }
 
   listenForMessages = () => this.messagesSub =
     this.messagesService.findLastMessage(this.userUid, this.boardUid, this.lastMessageDate)
@@ -263,6 +248,9 @@ export class BoardPage implements OnInit, OnDestroy {
   canPause = () => this.boardsService.board.status === BoardStatus.STARTED;
 
   showMessagesPage = () => this.navController.navigateForward(['messages'],
-    { relativeTo: this.activatedRoute, state: {userUid: this.userUid, boardUid: this.boardUid} })
+    { relativeTo: this.activatedRoute, state: { userUid: this.userUid, boardUid: this.boardUid } })
+
+  showFriendsPage = () => this.navController.navigateForward(['players'],
+    { relativeTo: this.activatedRoute, state: { userUid: this.userUid, boardUid: this.boardUid } })
 
 }

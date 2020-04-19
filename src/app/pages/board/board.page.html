@@ -3,19 +3,21 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/dashboard" color="dark"></ion-back-button>
     </ion-buttons>
-    <ion-title color="dark">{{boardsService.board?.title}}</ion-title>
-    <ion-buttons slot="end" *ngIf="!loading">
+    <ion-buttons *ngIf="!loading" class="lm-board-actions">
       <ion-button *ngIf="isCreator && canPlay()" (click)="startGame()">
-        <ion-icon name="play-outline" color="dark"></ion-icon>
+        <ion-icon name="play" color="dark"></ion-icon>
       </ion-button>
       <ion-button *ngIf="isCreator && canPause()" (click)="pauseGame()">
-        <ion-icon name="pause-outline" color="dark"></ion-icon>
+        <ion-icon name="pause" color="dark"></ion-icon>
       </ion-button>
       <ion-button (click)="showMessagesPage()">
-        <ion-icon color="dark" slot="icon-only" name="chatbox-outline"></ion-icon>
+        <ion-icon color="dark" slot="icon-only" name="chatbox"></ion-icon>
+      </ion-button>
+      <ion-button (click)="showFriendsPage()">
+        <ion-icon color="dark" slot="icon-only" name="people-circle"></ion-icon>
       </ion-button>
       <ion-button (click)="showActionSheet()" [disabled]="boardsService.board?.status === 1">
-        <ion-icon color="dark" slot="icon-only" name="settings-outline"></ion-icon>
+        <ion-icon color="dark" slot="icon-only" name="settings"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

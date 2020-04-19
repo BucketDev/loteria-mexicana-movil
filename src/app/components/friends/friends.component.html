@@ -17,7 +17,8 @@
             <small>{{friend.email}}</small>
           </ion-label>
         </div>
-        <ion-checkbox *ngIf="selectableFriend" slot="end" (ionChange)="selectFriend($event)" [value]="friend"></ion-checkbox>
+        <ion-checkbox *ngIf="selectableFriend" slot="end" (ionChange)="selectFriend($event)"
+                      [value]="friend" [name]="friend.uid"></ion-checkbox>
       </ion-item>
       <ion-item-options side="end" *ngIf="deletableFriend">
         <ion-item-option (click)="deleteFriend(friend)" color="danger">

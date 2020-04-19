@@ -49,7 +49,8 @@ export class NewBoardPage implements OnInit {
         await this.modalController.dismiss();
         await toast.present();
         await this.router.navigateByUrl(`/board/${this.auth.lotteryUser.uid}/${document.id}`);
-        this.boardsService.addPlayers(document.id, this.friendsComponent.selectedFriends);
+        const players = [...this.friendsComponent.selectedFriends, this.auth.lotteryUser];
+        this.boardsService.addPlayers(document.id, players);
       })
       .catch(async (err) => {
         console.log(err);

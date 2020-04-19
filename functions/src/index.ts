@@ -41,6 +41,10 @@ const getUserInfo = (userRecord: UserRecord): {email: string, displayName: strin
 
 exports.sendInvitePlayers = functions.firestore.document('users/{uid}/boards/{boardUid}/players/{playerUid}')
   .onCreate((snap, context) => {
+    // the player is the creator, there's no need to send an invite
+    if (context.params.uid === context.params.playerUid) {
+      return null;
+    }
     const userRef = admin.firestore().collection('/users').doc(context.params.uid);
     return userRef.get().then(userDocument => {
       const userData = userDocument.data();

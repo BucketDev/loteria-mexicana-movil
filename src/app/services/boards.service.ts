@@ -13,6 +13,7 @@ import {FireAuthService} from './security/fire-auth.service';
 import {CardsService} from './cards.service';
 import {firestore} from 'firebase/app';
 import Timestamp = firestore.Timestamp;
+import {Message} from "../models/message.class";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,7 @@ export class BoardsService {
   private collectionName = '/boards';
   private collectionPlayersName = '/players';
   private collectionWinnersName = '/winners';
+  private collectionMessagesName = '/messages';
   public board: Board;
 
   constructor(private db: AngularFirestore,
@@ -36,7 +38,12 @@ export class BoardsService {
     const playersCollection = this.db.collection(this.collectionUsersName)
       .doc(this.auth.lotteryUser.uid).collection(this.collectionName).doc(uid)
       .collection(this.collectionPlayersName);
-    friends.forEach((friend: LotteryUser) => playersCollection.doc(friend.uid).set({...friend}));
+    const batch = this.db.firestore.batch();
+    friends.forEach((friend: LotteryUser) => {
+      const playerRef = playersCollection.doc(friend.uid).ref;
+      batch.set(playerRef, {...friend});
+    });
+    return batch.commit();
   }
 
   findByUid = (userUid: string, boardUid: string) => this.db.collection(this.collectionUsersName).doc(userUid)
@@ -77,6 +84,11 @@ export class BoardsService {
       .pipe(map((snapshot: QuerySnapshot<LotteryUser>) =>
         snapshot.docs.map((document: QueryDocumentSnapshot<LotteryUser>) => document.ref))).toPromise();
     winners.forEach(winner => batch.delete(winner));
+
+    const messages: DocumentReference[] = await boardDocument.collection(this.collectionMessagesName).get()
+      .pipe(map((snapshot: QuerySnapshot<Message>) =>
+        snapshot.docs.map((document: QueryDocumentSnapshot<Message>) => document.ref))).toPromise();
+    messages.forEach(message => batch.delete(message));
 
     batch.delete(boardDocument.ref);
     await batch.commit();

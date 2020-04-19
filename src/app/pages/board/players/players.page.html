@@ -1,11 +1,9 @@
 <ion-header>
-  <ion-toolbar color="dark">
+  <ion-toolbar color="warning">
     <ion-buttons slot="start">
-      <ion-button (click)="modalController.dismiss()" color="warning">
-        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
-      </ion-button>
+      <ion-back-button defaultHref="../dashboard"></ion-back-button>
     </ion-buttons>
-    <ion-title color="warning">Jugadores</ion-title>
+    <ion-title>Jugadores</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -21,5 +19,11 @@
         </ion-label>
       </div>
     </ion-item>
+    <ion-item lines="none"></ion-item>
   </ion-list>
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed" *ngIf="isCreator">
+    <ion-fab-button color="warning" (click)="showModalFriends()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
