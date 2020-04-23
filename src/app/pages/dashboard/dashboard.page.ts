@@ -51,23 +51,6 @@ export class DashboardPage {
               private activatedRoute: ActivatedRoute,
               private notificationsService: NotificationsService,
               private platform: Platform) {
-    if (platform.is('capacitor')) {
-      // Prepare interstitial banner
-      AdMob.showBanner(this.options).then(
-        value => {
-          console.log(value); // true
-        },
-        error => {
-          console.error(error); // show error
-        }
-      );
-
-      // Subscibe Banner Event Listener
-      AdMob.addListener("onAdLoaded", (info: boolean) => {
-        // You can call showInterstitial() here or anytime you want.
-        console.log("Banner Ad Loaded");
-      });
-    }
   }
 
   ionViewWillEnter() {
@@ -81,7 +64,22 @@ export class DashboardPage {
     });
   }
 
+  ionViewDidEnter() {
+    if (this.platform.is('capacitor')) {
+      AdMob.showBanner(this.options).then(
+        value => console.log(value),
+        error => console.error(error)
+      );
+    }
+  }
+
   ionViewDidLeave() {
+    if (this.platform.is('capacitor')) {
+      AdMob.removeBanner().then(
+        value => console.log(value),
+        error => console.error(error)
+      );
+    }
     this.boardsSub.unsubscribe();
     this.notificationsSub.unsubscribe();
   }
