@@ -20,14 +20,14 @@
   <ion-row>
     <ion-col size="6">
       <ion-button size="block" color="medium" (click)="showSignUp()" class="ion-margin-horizontal">
-        <ion-icon name="create" slot="start"></ion-icon>
+        <ion-icon name="create" slot="start" class="ion-hide-sm-down"></ion-icon>
         <ion-label>Regístrate</ion-label>
       </ion-button>
     </ion-col>
     <ion-col size="6">
       <ion-button size="block" color="light" class="ion-margin-horizontal"
                   (click)="signIn()" [disabled]="signInFormGroup.invalid">
-        <ion-icon name="log-in" slot="start"></ion-icon>
+        <ion-icon name="log-in" slot="start" class="ion-hide-sm-down"></ion-icon>
         <ion-label>Ingresar</ion-label>
       </ion-button>
     </ion-col>

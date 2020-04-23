@@ -6,6 +6,7 @@ export const environment = {
   production: false,
   adMobId: 'ca-app-pub-4713371651982959~3328710347',
   adId: 'ca-app-pub-4713371651982959/6501668594',
+  adBannerId: 'ca-app-pub-4713371651982959/2213711867',
   firebase: {
     apiKey: 'AIzaSyC8UW_7B30civgI5VE4gQ3BQYSXzZbHvXE',
     authDomain: 'ionic-loteria-mexicana.firebaseapp.com',

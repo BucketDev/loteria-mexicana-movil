@@ -34,10 +34,9 @@ export class DashboardPage {
   notificationsUnread: number;
   loading = true;
   options: AdOptions = {
-    adId: environment.adId,
-    adSize: AdSize.SMART_BANNER,
-    position: AdPosition.BOTTOM_CENTER,
-    hasTabBar: false
+    adId: environment.adBannerId,
+    adSize: AdSize.BANNER,
+    position: AdPosition.BOTTOM_CENTER
   }
 
   constructor(public boardsService: BoardsService,
@@ -54,7 +53,7 @@ export class DashboardPage {
               private platform: Platform) {
     if (platform.is('capacitor')) {
       // Prepare interstitial banner
-      AdMob.prepareInterstitial(this.options).then(
+      AdMob.showBanner(this.options).then(
         value => {
           console.log(value); // true
         },
@@ -66,7 +65,7 @@ export class DashboardPage {
       // Subscibe Banner Event Listener
       AdMob.addListener("onAdLoaded", (info: boolean) => {
         // You can call showInterstitial() here or anytime you want.
-        console.log("Interstitial Ad Loaded");
+        console.log("Banner Ad Loaded");
       });
     }
   }

@@ -1,0 +1,27 @@
+<ion-list-header mode="ios">
+  <ion-label>Encuentra a tus amigos</ion-label>
+</ion-list-header>
+<ion-searchbar placeholder="Busca jugadores" (ionChange)="updateTextSearch($event)"></ion-searchbar>
+<ion-progress-bar type="indeterminate" color="warning" *ngIf="loading"></ion-progress-bar>
+<ion-item lines="none" class="ion-padding ion-text-wrap" *ngIf="users.length === 0">
+  <ion-label color="medium" class="ion-text-center ion-text-wrap">
+    <h2>Intenta buscar a tus amigos por nombre o email</h2>
+  </ion-label>
+</ion-item>
+<ion-list *ngIf="users.length > 0" class="ion-no-padding">
+  <ion-item *ngFor="let user of users">
+    <ion-avatar slot="start">
+      <img [src]="user.photoURL" alt="profile photo">
+    </ion-avatar>
+    <div class="lm-display-user-name">
+      <ion-label>{{user.displayName}}</ion-label>
+      <ion-label color="medium" slot="end" class="ion-text-end">
+        <small>{{user.email}}</small>
+      </ion-label>
+    </div>
+    <ion-button color="warning" (click)="addFriend(user)" slot="end" size="default"
+                [disabled]="user.isFriend" *ngIf="fireAuth.lotteryUser.uid !== user.uid">
+      <ion-icon slot="icon-only" name="person-add-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
+</ion-list>
