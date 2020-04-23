@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-empty-records',
@@ -17,6 +17,6 @@ export class EmptyRecordsComponent implements OnInit {
   ngOnInit() {}
 
   getImgURL = () => this.mini ? `https://img.icons8.com/bubbles/64/${this.icon}` :
-    `https://img.icons8.com/bubbles/128/${this.icon}`
+    `https://img.icons8.com/bubbles/256/${this.icon}`
 
 }

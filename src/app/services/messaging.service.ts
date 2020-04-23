@@ -73,7 +73,7 @@ export class MessagingService {
   }
 
   saveToken = (token: string) => {
-    this.usersService.find().subscribe(async (lotteryUser: LotteryUser) => {
+    this.usersService.find().toPromise().then(async (lotteryUser: LotteryUser) => {
       const currentTokens = lotteryUser.fcmTokens || {};
       if (!currentTokens[token]) {
         this.usersService.updateFCMToken({...currentTokens, [token]: true})

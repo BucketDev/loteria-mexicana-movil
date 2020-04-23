@@ -10,6 +10,9 @@
     </ion-buttons>
     <ion-title>Lotería Mexicana</ion-title>
     <ion-buttons slot="end" collapse="true">
+      <!--<ion-button (click)="showAd()">
+        <ion-icon slot="icon-only" name="reader"></ion-icon>
+      </ion-button>-->
       <ion-button (click)="showFriendsPage()">
         <ion-icon slot="icon-only" name="person-add-outline"></ion-icon>
       </ion-button>
@@ -20,8 +23,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content id="dashboard">
-  <ion-searchbar placeholder="Buscar Tableros"></ion-searchbar>
+<ion-content fullscreen>
   <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>
   <ng-template #notLoading>
     <app-empty-records *ngIf="boards.length === 0"
@@ -40,6 +42,7 @@
               {{board.creationDate | date: 'mediumDate'}}
             </ion-label>
           </div>
+          <ion-badge slot="end" color="warning">Jugadores: {{board.players}}</ion-badge>
         </ion-item>
         <ion-item-options side="end">
           <ion-item-option color="danger" (click)="showDeleteBoard(board)">

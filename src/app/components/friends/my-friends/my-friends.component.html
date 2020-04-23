@@ -1,13 +1,13 @@
-<ion-searchbar placeholder="Buscar amigos"></ion-searchbar>
 <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>
 <ng-template #notLoading>
-  <app-empty-records *ngIf="user.friendsRef.length === 0"
-                     title="No tienes amigos aún"
-                     subtitle="Intenta buscar y agregar amigos con para poder jugar"
+  <app-empty-records *ngIf="user.friendsRef.length === 0" [mini]="true"
+                     [title]="emptyTitle"
+                     subtitle="Intenta buscar y agregar nuevos amigos"
                      icon="crowd"></app-empty-records>
   <ion-list>
     <ion-item-sliding *ngFor="let friend of user.friends">
-      <ion-item [detail]="!selectableFriend" (click)="!selectableFriend && showProfilePage(friend)">
+      <ion-item [detail]="!selectableFriend" (click)="!selectableFriend && showProfilePage(friend)"
+                [button]="!selectableFriend">
         <ion-avatar slot="start">
           <img [src]="friend.photoURL" alt="profile photo">
         </ion-avatar>
@@ -26,6 +26,6 @@
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
-    <ion-item lines="none"></ion-item>
   </ion-list>
+  <app-find-friends></app-find-friends>
 </ng-template>

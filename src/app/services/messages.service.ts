@@ -3,7 +3,7 @@ import {AngularFirestore, DocumentData, QueryDocumentSnapshot} from "@angular/fi
 import {map} from "rxjs/operators";
 import {Message} from "../models/message.class";
 import {FireAuthService} from "./security/fire-auth.service";
-import {firestore} from 'firebase/app';
+import firebase, {firestore} from 'firebase/app';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +40,7 @@ export class MessagesService {
   addMessage = (userUid: string, boardUid: string, text: string) => this.db.collection(this.collectionUsersName).doc(userUid)
     .collection(this.collectionBoardsName).doc(boardUid).collection(this.collectionName)
     .add({
-      text, creationDate: new Date(),
+      text, creationDate: firebase.firestore.FieldValue.serverTimestamp(),
       displayName: this.fireAuth.lotteryUser.displayName,
       userUid: this.fireAuth.lotteryUser.uid
     })

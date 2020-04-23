@@ -4,7 +4,7 @@ import {IonicModule} from '@ionic/angular';
 import {PipesModule} from '../pipes/pipes.module';
 import {HistorySlidesComponent} from './history-slides/history-slides.component';
 import {BoardComponent} from './board/board.component';
-import {FriendsComponent} from './friends/friends.component';
+import {MyFriendsComponent} from './friends/my-friends/my-friends.component';
 import {EmptyRecordsModule} from "./shared/empty-records/empty-records.module";
 
 @NgModule({
@@ -16,13 +16,11 @@ import {EmptyRecordsModule} from "./shared/empty-records/empty-records.module";
   ],
   declarations: [
     HistorySlidesComponent,
-    BoardComponent,
-    FriendsComponent
+    BoardComponent
   ],
   exports: [
     HistorySlidesComponent,
-    BoardComponent,
-    FriendsComponent
+    BoardComponent
   ]
 })
 export class ComponentsModule { }

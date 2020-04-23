@@ -1,50 +1,55 @@
-import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
-import {LotteryUser} from '../../models/lottery-user.class';
-import {FriendsService} from '../../services/friends.service';
+import {Component, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {LotteryUser} from '../../../models/lottery-user.class';
+import {FriendsService} from '../../../services/friends.service';
 import {IonCheckbox, NavController, ToastController} from '@ionic/angular';
-import {UsersService} from "../../services/users.service";
 import {DocumentSnapshot} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
-  selector: 'app-friends',
-  templateUrl: './friends.component.html',
-  styleUrls: ['./friends.component.scss'],
+  selector: 'app-my-friends',
+  templateUrl: './my-friends.component.html',
+  styleUrls: ['./my-friends.component.scss'],
 })
-export class FriendsComponent implements OnInit {
+export class MyFriendsComponent implements OnInit {
 
   loading = true;
   user: LotteryUser;
   selectedFriends: LotteryUser[] = [];
-  @Output() friendsLoaded = new EventEmitter<LotteryUser[]>();
   @Input() players: LotteryUser[];
   @Input() deletableFriend = false;
   @Input() selectableFriend = true;
   @ViewChildren(IonCheckbox) friendsCheckBox: QueryList<IonCheckbox>;
 
   constructor(private friendsService: FriendsService,
-              private usersService: UsersService,
               private toastController: ToastController,
               private navController: NavController,
               private activatedRoute: ActivatedRoute) {
-    usersService.find().subscribe((user: LotteryUser) => {
+    friendsService.find().subscribe((user: LotteryUser) => {
       this.user = user;
       this.user.friends = [];
-      if (this.players) {
-        this.user.friendsRef = this.user.friendsRef.filter(friendRef =>
-          !this.players.find(player => player.uid === friendRef.id));
-      }
+      this.validateExtras();
       user.friendsRef.forEach(async friendRef => {
         const friendSnap: DocumentSnapshot<LotteryUser> = await friendRef.get() as DocumentSnapshot<LotteryUser>;
         const friend = friendSnap.data();
         this.user.friends.push({...friend, uid: friendSnap.id });
-        this.friendsLoaded.emit(this.user.friends);
       })
       this.loading = false;
     });
   }
 
+  validateExtras = () => {
+    // if players are sent, then remove from the list of friends to avoid selecting it
+    if (this.players) {
+      this.user.friendsRef = this.user.friendsRef.filter(friendRef =>
+        !this.players.find(player => player.uid === friendRef.id));
+    }
+  }
+
   ngOnInit() { }
+
+  get emptyTitle() {
+    return this.players && this.players.length > 0 ? 'No tienes más amigos' : 'No tienes amigos aún';
+  }
 
   deleteFriend = (user: LotteryUser) =>
     this.friendsService.deleteFriend(user).then(() => {

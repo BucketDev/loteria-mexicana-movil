@@ -26,7 +26,7 @@
           {{message.text}}
         </ion-label>
         <ion-note [slot]="message.userUid === fireAuth.lotteryUser.uid ? 'start' : 'end'">
-          {{message.creationDate.toDate() | date: 'short'}}
+          {{message.creationDate && message.creationDate.toDate() | date: 'short'}}
         </ion-note>
       </ion-item>
     </ion-list>
@@ -37,7 +37,7 @@
     <ion-toolbar color="warning">
         <ion-item color="light" class="ion-margin-horizontal">
           <ion-icon slot="start" name="chatbox-ellipses-outline"></ion-icon>
-          <ion-input formControlName="message"></ion-input>
+          <ion-input formControlName="message" [autocapitalize]="true" [autocorrect]="true" [autocomplete]="true"></ion-input>
         </ion-item>
         <ion-buttons slot="end">
           <ion-button [disabled]="formMessageGroup.invalid" (click)="addMessage()">

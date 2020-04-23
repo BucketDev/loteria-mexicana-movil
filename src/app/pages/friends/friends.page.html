@@ -7,10 +7,5 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <app-friends [deletableFriend]="true" [selectableFriend]="false" (friendsLoaded)="setFriends($event)"></app-friends>
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="warning" (click)="showModalUsers()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <app-my-friends [deletableFriend]="true" [selectableFriend]="false"></app-my-friends>
 </ion-content>

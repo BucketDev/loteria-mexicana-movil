@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from "firebase-admin";
+import DocumentSnapshot = admin.firestore.DocumentSnapshot;
 import UserRecord = admin.auth.UserRecord;
 
 admin.initializeApp();
@@ -71,8 +72,8 @@ exports.sendInvitePlayers = functions.firestore.document('users/{uid}/boards/{bo
           const playerRef = admin.firestore().collection('/users').doc(context.params.playerUid);
           return playerRef.get()
             .then(playerDocument => {
-              return playerRef.collection('notifications').add({...notification})
-                .then(playerUpdated => {
+              // @ts-ignore
+              return playerRef.collection('notifications').add({...notification}).then(() => {
                   // @ts-ignore
                   const {fcmTokens} = playerDocument.data();
                   const {uid, boardUid} = context.params;
@@ -97,3 +98,50 @@ exports.sendInvitePlayers = functions.firestore.document('users/{uid}/boards/{bo
         .catch(console.error)
     }).catch(console.error);
   });
+
+exports.increasePlayersTotal = functions.firestore.document('users/{userUid}/boards/{boardUid}/players/{playerUid}')
+  .onCreate((snapshot, context) => updatePlayersTotal(snapshot))
+
+exports.decreasePlayersTotal = functions.firestore.document('users/{userUid}/boards/{boardUid}/players/{playerUid}')
+  .onDelete((snapshot, context) => updatePlayersTotal(snapshot))
+
+const updatePlayersTotal = (snapshot: DocumentSnapshot) => {
+  const collection = snapshot.ref.parent;
+  if (collection) {
+    const boardRef = collection.parent;
+    if (boardRef !== null) {
+      return collection.listDocuments().then((documents) =>
+        boardRef.update({ players: documents.length })).catch(console.error);
+    }
+  }
+  return null;
+}
+
+exports.updateWinningResult = functions.firestore.document('users/{userUid}/boards/{boardUid}/winners/{winnerUid}')
+  .onCreate((snapshot, context) => {
+    const userRef = admin.firestore().collection('/users').doc(context.params.winnerUid);
+    const collection = snapshot.ref.parent;
+    if (userRef !== null) {
+      // @ts-ignore
+      return userRef.get().then((userDocument) => {
+          const userData = userDocument.data();
+          if (userData !== undefined) {
+            return collection.listDocuments().then(documents => {
+              switch (documents.length) {
+                case 1:
+                  return userRef.update({firstPlaces: userData.firstPlaces + 1}).catch(console.error);
+                case 2:
+                  return userRef.update({secondPlaces: userData.secondPlaces + 1}).catch(console.error);
+                case 3:
+                  return userRef.update({thirdPlaces: userData.thirdPlaces + 1}).catch(console.error);
+                default:
+                  return userRef.update({otherPlaces: userData.otherPlaces + 1}).catch(console.error);
+              }
+            })
+          }
+          return null;
+        })
+        .catch(console.error);
+    }
+    throw new Error('User not found');
+  })

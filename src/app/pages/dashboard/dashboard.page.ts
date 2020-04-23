@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {
   AlertController,
   LoadingController,
   ModalController,
   NavController,
+  Platform,
   PopoverController,
   ToastController
 } from "@ionic/angular";
@@ -14,6 +15,11 @@ import {BoardsService} from "../../services/boards.service";
 import {FireAuthService} from "../../services/security/fire-auth.service";
 import {Subscription} from "rxjs";
 import {NotificationsService} from "../../services/notifications.service";
+import {Plugins} from '@capacitor/core';
+import {environment} from "../../../environments/environment";
+import {AdOptions, AdPosition, AdSize} from 'capacitor-admob';
+
+const {AdMob} = Plugins;
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +33,12 @@ export class DashboardPage {
   notificationsSub: Subscription;
   notificationsUnread: number;
   loading = true;
+  options: AdOptions = {
+    adId: environment.adId,
+    adSize: AdSize.SMART_BANNER,
+    position: AdPosition.BOTTOM_CENTER,
+    hasTabBar: false
+  }
 
   constructor(public boardsService: BoardsService,
               private popoverController: PopoverController,
@@ -38,9 +50,28 @@ export class DashboardPage {
               private toastController: ToastController,
               private navController: NavController,
               private activatedRoute: ActivatedRoute,
-              private notificationsService: NotificationsService) { }
+              private notificationsService: NotificationsService,
+              private platform: Platform) {
+    if (platform.is('capacitor')) {
+      // Prepare interstitial banner
+      AdMob.prepareInterstitial(this.options).then(
+        value => {
+          console.log(value); // true
+        },
+        error => {
+          console.error(error); // show error
+        }
+      );
 
-  ngOnInit(): void {
+      // Subscibe Banner Event Listener
+      AdMob.addListener("onAdLoaded", (info: boolean) => {
+        // You can call showInterstitial() here or anytime you want.
+        console.log("Interstitial Ad Loaded");
+      });
+    }
+  }
+
+  ionViewWillEnter() {
     this.loading = true;
     this.boardsSub = this.boardsService.findAllByUserUid().subscribe((boards: Board[]) => {
       this.loading = false;
@@ -51,7 +82,7 @@ export class DashboardPage {
     });
   }
 
-  ngOnDestroy() {
+  ionViewDidLeave() {
     this.boardsSub.unsubscribe();
     this.notificationsSub.unsubscribe();
   }
@@ -63,7 +94,8 @@ export class DashboardPage {
     await modal.present();
   }
 
-  showBoard = (uid: string) => this.router.navigateByUrl(`/board/${this.fireAuth.lotteryUser.uid}/${uid}`);
+  showBoard = (uid: string) => this.navController.navigateForward([`/board/`, this.fireAuth.lotteryUser.uid, uid],
+    { relativeTo: this.activatedRoute });
 
   showDeleteBoard = (board: Board) => this.alertController.create({
     header: '¿Deseas borrar el tablero?',
@@ -100,5 +132,18 @@ export class DashboardPage {
 
   showNotificationsPage = () => this.navController
     .navigateForward(['../notifications'], { relativeTo: this.activatedRoute });
+
+  showAd = () => {
+    if (this.platform.is('capacitor')) {
+      AdMob.showInterstitial().then(
+        value => {
+          console.log(value); // true
+        },
+        error => {
+          console.error(error); // show error
+        }
+      );
+    }
+  }
 
 }

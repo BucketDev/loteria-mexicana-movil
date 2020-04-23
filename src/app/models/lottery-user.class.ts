@@ -13,5 +13,6 @@ export class LotteryUser {
     public otherPlaces: number;
     public friendsRef: DocumentReference[];
     public friends?: LotteryUser[];
+    public online?: boolean;
     public creationDate: number;
 }

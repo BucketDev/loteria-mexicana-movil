@@ -17,6 +17,7 @@ import {AngularFireMessagingModule} from '@angular/fire/messaging';
 
 import {environment} from '../environments/environment';
 import {AngularFireStorageModule} from "@angular/fire/storage";
+import {AngularFireDatabaseModule} from "@angular/fire/database";
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import {AngularFireStorageModule} from "@angular/fire/storage";
     AngularFireAuthModule,
     AngularFireFunctionsModule,
     AngularFireMessagingModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
+    AngularFireDatabaseModule
   ],
   providers: [
     StatusBar,

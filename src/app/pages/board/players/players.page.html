@@ -7,20 +7,30 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let user of players">
-      <ion-avatar slot="start">
-        <img [src]="user.photoURL" alt="profile photo">
-      </ion-avatar>
-      <div class="lm-display-user-name">
-        <ion-label>{{user.displayName}}</ion-label>
-        <ion-label color="medium" slot="end" class="ion-text-end">
-          <small>{{user.email}}</small>
-        </ion-label>
-      </div>
-    </ion-item>
-    <ion-item lines="none"></ion-item>
-  </ion-list>
+  <ion-progress-bar type="indeterminate" color="warning" *ngIf="loading; else notLoading"></ion-progress-bar>
+  <ng-template #notLoading>
+    <app-empty-records *ngIf="players.length === 0"
+                       title="No hay jugadores en el tablero"
+                       subtitle="Intenta invitando a tus amigos a jugar en este tablero"
+                       icon="crowd"></app-empty-records>
+    <ion-list>
+      <ion-item *ngFor="let user of players">
+        <ion-avatar slot="start">
+          <img [src]="user.photoURL" alt="profile photo">
+        </ion-avatar>
+        <div class="lm-display-user-name">
+          <ion-label>{{user.displayName}}</ion-label>
+          <ion-label color="medium" slot="end" class="ion-text-end">
+            <small>{{user.email}}</small>
+          </ion-label>
+        </div>
+        <ion-note slot="end" [color]="user.online ? 'success' : 'danger'">
+          {{user.online ? 'En línea' : 'Desconectado'}}
+        </ion-note>
+      </ion-item>
+      <ion-item lines="none"></ion-item>
+    </ion-list>
+  </ng-template>
   <ion-fab horizontal="end" vertical="bottom" slot="fixed" *ngIf="isCreator">
     <ion-fab-button color="warning" (click)="showModalFriends()">
       <ion-icon name="add"></ion-icon>

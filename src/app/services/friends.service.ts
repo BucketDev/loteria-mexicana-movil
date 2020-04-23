@@ -1,17 +1,9 @@
 import { Injectable } from '@angular/core';
-import {map} from 'rxjs/operators';
-import {
-  Action,
-  AngularFirestore,
-  DocumentChangeAction,
-  DocumentData, DocumentReference, DocumentSnapshot,
-  QueryDocumentSnapshot,
-  QuerySnapshot
-} from '@angular/fire/firestore';
-import {Board} from '../models/board.class';
+import {AngularFirestore, DocumentData} from '@angular/fire/firestore';
 import {LotteryUser} from '../models/lottery-user.class';
 import {FireAuthService} from './security/fire-auth.service';
 import {FriendLotteryUser} from "../models/friend-lottery-user.class";
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -19,10 +11,12 @@ import {FriendLotteryUser} from "../models/friend-lottery-user.class";
 export class FriendsService {
 
   private collectionUsersName = '/users';
-  private collectionName = '/friends';
 
   constructor(private db: AngularFirestore,
               private auth: FireAuthService) { }
+
+  find = () => this.db.collection(this.collectionUsersName).doc(this.auth.lotteryUser.uid).valueChanges()
+    .pipe(map((document: DocumentData) => ({...document, uid: document.id})))
 
   addFriend = (user: FriendLotteryUser) => {
     const friendRef = this.db.collection(this.collectionUsersName).doc(user.uid).ref;

@@ -6,7 +6,7 @@ import {LotteryUser} from '../../../models/lottery-user.class';
 import {BoardsService} from '../../../services/boards.service';
 import {Router} from "@angular/router";
 import {NewBoardPage} from "../../modal/new-board/new-board.page";
-import {FriendsComponent} from "../../../components/friends/friends.component";
+import {MyFriendsComponent} from "../../../components/friends/my-friends/my-friends.component";
 import {AddFriendPage} from "../../modal/add-friend/add-friend.page";
 import {FireAuthService} from "../../../services/security/fire-auth.service";
 

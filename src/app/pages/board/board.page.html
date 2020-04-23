@@ -3,17 +3,23 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/dashboard" color="dark"></ion-back-button>
     </ion-buttons>
-    <ion-buttons *ngIf="!loading" class="lm-board-actions">
+    <ion-buttons slot="end" *ngIf="!loading">
       <ion-button *ngIf="isCreator" [disabled]="!canPlay()" (click)="startGame()">
         <ion-icon name="play" color="dark"></ion-icon>
       </ion-button>
       <ion-button (click)="showMessagesPage()">
         <ion-icon color="dark" slot="icon-only" name="chatbox"></ion-icon>
       </ion-button>
+      <ion-button (click)="showWinnersModal()">
+        <ion-icon color="dark" slot="icon-only" name="trophy"></ion-icon>
+      </ion-button>
       <ion-button (click)="showFriendsPage()">
         <ion-icon color="dark" slot="icon-only" name="people-circle"></ion-icon>
       </ion-button>
-      <ion-button (click)="showActionSheet()" [disabled]="boardsService.board?.status === 1">
+      <ion-button (click)="generateCurrentBoard()" [disabled]="!canPlay()">
+        <ion-icon color="dark" slot="icon-only" name="refresh-circle"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="isCreator" (click)="showBoardSettingsModal()" [disabled]="!canPlay()">
         <ion-icon color="dark" slot="icon-only" name="settings"></ion-icon>
       </ion-button>
     </ion-buttons>

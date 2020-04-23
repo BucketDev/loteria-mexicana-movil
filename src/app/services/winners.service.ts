@@ -26,7 +26,8 @@ export class WinnersService {
               private auth: FireAuthService) { }
 
   addWinningPlayer = (userUid: string, uid: string) => this.db.collection(this.collectionUsersName).doc(userUid)
-    .collection(this.collectionBoardsName).doc(uid).collection(this.collectionName).add({...new Winner(this.auth.lotteryUser)})
+    .collection(this.collectionBoardsName).doc(uid).collection(this.collectionName).doc(this.auth.lotteryUser.uid)
+    .set({...new Winner(this.auth.lotteryUser)})
 
   empty = (boardUid: string) => this.db.collection(this.collectionUsersName).doc(this.auth.lotteryUser.uid)
     .collection(this.collectionBoardsName).doc(boardUid).collection(this.collectionName).get()

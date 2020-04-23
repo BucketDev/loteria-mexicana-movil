@@ -6,13 +6,15 @@ import { IonicModule } from '@ionic/angular';
 
 import { AddFriendPage } from './add-friend.page';
 import {ComponentsModule} from "../../../components/components.module";
+import {FriendsModule} from "../../../components/friends/friends.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ComponentsModule
+    ComponentsModule,
+    FriendsModule
   ],
   declarations: [AddFriendPage],
   entryComponents: [AddFriendPage]

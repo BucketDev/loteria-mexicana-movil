@@ -5,6 +5,9 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import {FireAuthService} from './services/security/fire-auth.service';
 import {MessagingService} from './services/messaging.service';
+import {environment} from "../environments/environment";
+import {Plugins} from '@capacitor/core';
+const {AdMob} = Plugins;
 
 @Component({
   selector: 'app-root',
@@ -20,6 +23,9 @@ export class AppComponent {
               private statusBar: StatusBar,
               private fireAuth: FireAuthService,
               private messagingService: MessagingService) {
+    if (this.platform.is('capacitor')) {
+      AdMob.initialize(environment.adMobId);
+    }
     this.fireAuth.$userRetrieved.subscribe((userExists: boolean) => {
       this.initializeApp();
       this.loading = false;

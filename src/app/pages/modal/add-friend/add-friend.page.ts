@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {LoadingController, ModalController} from "@ionic/angular";
 import {LotteryUser} from "../../../models/lottery-user.class";
-import {FriendsComponent} from "../../../components/friends/friends.component";
+import {MyFriendsComponent} from "../../../components/friends/my-friends/my-friends.component";
 import {BoardsService} from "../../../services/boards.service";
 
 @Component({
@@ -13,7 +13,7 @@ export class AddFriendPage implements OnInit {
 
   @Input() players: LotteryUser[];
   @Input() boardUid: string;
-  @ViewChild(FriendsComponent, {static: true}) friendsComponent: FriendsComponent;
+  @ViewChild(MyFriendsComponent, {static: true}) friendsComponent: MyFriendsComponent;
 
   constructor(public modalController: ModalController,
               private boardsService: BoardsService,

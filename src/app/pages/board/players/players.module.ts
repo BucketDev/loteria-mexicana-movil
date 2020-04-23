@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { PlayersPage } from './players.page';
 import {PlayersPageRoutingModule} from "./players-routing.module";
 import {AddFriendPageModule} from "../../modal/add-friend/add-friend.module";
+import {EmptyRecordsModule} from "../../../components/shared/empty-records/empty-records.module";
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import {AddFriendPageModule} from "../../modal/add-friend/add-friend.module";
     FormsModule,
     IonicModule,
     PlayersPageRoutingModule,
-    AddFriendPageModule
+    AddFriendPageModule,
+    EmptyRecordsModule
   ],
   declarations: [PlayersPage],
   exports: [PlayersPage]

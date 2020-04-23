@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
 import { NewBoardPage } from './new-board.page';
-import {ComponentsModule} from '../../../components/components.module';
+import {FriendsModule} from "../../../components/friends/friends.module";
 
 @NgModule({
   imports: [
@@ -13,7 +11,7 @@ import {ComponentsModule} from '../../../components/components.module';
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    ComponentsModule
+    FriendsModule
   ],
   declarations: [
       NewBoardPage

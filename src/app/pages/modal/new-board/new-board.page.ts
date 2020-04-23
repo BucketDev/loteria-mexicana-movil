@@ -9,7 +9,7 @@ import {BoardsService} from '../../../services/boards.service';
 import {DocumentReference} from '@angular/fire/firestore';
 import {Board} from '../../../models/board.class';
 import {Router} from '@angular/router';
-import {FriendsComponent} from '../../../components/friends/friends.component';
+import {MyFriendsComponent} from '../../../components/friends/my-friends/my-friends.component';
 
 @Component({
   selector: 'app-modal-board',
@@ -19,7 +19,7 @@ import {FriendsComponent} from '../../../components/friends/friends.component';
 export class NewBoardPage implements OnInit {
 
   formBoard: FormGroup;
-  @ViewChild(FriendsComponent, {static: true}) friendsComponent: FriendsComponent;
+  @ViewChild(MyFriendsComponent, {static: true}) friendsComponent: MyFriendsComponent;
 
   constructor(private modalController: ModalController,
               private toastController: ToastController,
@@ -41,16 +41,16 @@ export class NewBoardPage implements OnInit {
   saveBoard = () => {
     const board: Board = this.formBoard.value;
     this.boardsService.postBoard(board)
-      .then(async (document: DocumentReference) => {
-        const toast = await this.toastController.create({
-          message: `El tablero <strong>${board.title}</strong> ha sido creado exitosamente`,
-          duration: 3000
-        });
-        await this.modalController.dismiss();
-        await toast.present();
-        await this.router.navigateByUrl(`/board/${this.auth.lotteryUser.uid}/${document.id}`);
+      .then((document: DocumentReference) => {
         const players = [...this.friendsComponent.selectedFriends, this.auth.lotteryUser];
-        this.boardsService.addPlayers(document.id, players);
+        this.boardsService.addPlayers(document.id, players).then(() => {
+          this.toastController.create({
+            message: `El tablero <strong>${board.title}</strong> ha sido creado exitosamente`,
+            duration: 3000
+          }).then(toast => toast.present());
+          this.modalController.dismiss()
+            .then(() => this.router.navigateByUrl(`/board/${this.auth.lotteryUser.uid}/${document.id}`));
+        });
       })
       .catch(async (err) => {
         console.error(err);

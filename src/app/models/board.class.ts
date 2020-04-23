@@ -10,6 +10,7 @@ export class Board {
     public timeLapse: number;
     public winStrategy: number;
     public photoURL: string;
+    public players: number;
 
     constructor(title: string) {
         this.title = title;
@@ -17,6 +18,7 @@ export class Board {
         this.currentDeck = [];
         this.timeLapse = 3;
         this.winStrategy = 0;
-        this.photoURL = `assets/img/lottery/${ Math.floor(Math.random() * 53) }.jpg`
+        this.photoURL = `assets/img/lottery/${ Math.floor(Math.random() * 53) + 1 }.jpg`
+        this.players = 0;
     }
 }

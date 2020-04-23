@@ -4,10 +4,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FriendsPage } from './friends.page';
-import {ComponentsModule} from '../../components/components.module';
 import {FriendsRoutingModule} from "./friends-routing.module";
 import {EmptyRecordsModule} from "../../components/shared/empty-records/empty-records.module";
-import {NewFriendPageModule} from "../modal/new-friend/new-friend.module";
+import {FriendsModule} from "../../components/friends/friends.module";
 
 @NgModule({
   imports: [
@@ -17,8 +16,7 @@ import {NewFriendPageModule} from "../modal/new-friend/new-friend.module";
     RouterModule.forChild([{ path: '', component: FriendsPage }]),
     FriendsRoutingModule,
     EmptyRecordsModule,
-    ComponentsModule,
-    NewFriendPageModule
+    FriendsModule
   ],
   declarations: [FriendsPage]
 })
